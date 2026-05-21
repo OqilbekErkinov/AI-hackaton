@@ -1,0 +1,60 @@
+# ====================================================================
+# Rankedu - Root Git Ignore Rules for Fullstack Monorepo
+# ====================================================================
+
+# --- OS / IDEs ---
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# --- Python / Django ---
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+**/*.pyd
+**/.pytest_cache/
+**/htmlcov/
+**/.coverage
+**/core/migrations/0*.py
+# Keep __init__.py in migrations
+!**/core/migrations/__init__.py
+
+# --- Python Virtual Environments ---
+**/venv/
+**/venv_*/
+**/venv_run/
+**/env/
+**/ENV/
+**/dist/
+**/build/
+**/*.egg-info/
+
+# --- Django Media & Static Outputs ---
+**/media/
+**/staticfiles/
+**/staticfiles_build/
+**/var/
+**/db.sqlite3
+**/db.sqlite3-journal
+
+# --- Node / Frontend (Nuxt) ---
+**/node_modules/
+**/.nuxt/
+**/.output/
+**/.data/
+**/.nitro/
+**/.cache/
+**/dist/
+**/*.log
+
+# --- Environment Configurations ---
+**/.env
+**/.env.local
+**/.env.*.local
+!**/.env.example
