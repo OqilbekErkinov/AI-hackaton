@@ -232,7 +232,7 @@ UNFOLD = {
                         "permission": "core.callbacks.is_not_tutor",
                     },
                     {
-                        "title": "Grant uchun nomzodlar",
+                        "title": "Yillik reyting",
                         "icon": "workspace_premium",
                         "link": "/admin/core/annualranking/",
                         "models": ["core.annualranking"],
@@ -303,13 +303,6 @@ UNFOLD = {
                         "icon": "school",
                         "link": "/admin/core/major/",
                         "models": ["core.major"],
-                        "permission": "core.callbacks.is_not_tutor",
-                    },
-                    {
-                        "title": "Grant kvotalari",
-                        "icon": "pie_chart",
-                        "link": "/admin/core/grantquota/",
-                        "models": ["core.grantquota"],
                         "permission": "core.callbacks.is_not_tutor",
                     },
                 ],

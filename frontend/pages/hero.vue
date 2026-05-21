@@ -39,7 +39,7 @@
     </div>
 
     <p class="heroP">
-      Grant taqsimoti, talabalar faolligi va ochiq reyting
+      Akademik portfolio, talabalar faolligi va ochiq reyting
       <br />
       yagona raqamli tizimda.
     </p>
