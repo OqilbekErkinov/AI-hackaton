@@ -9,7 +9,7 @@ from django.utils.safestring import mark_safe
 from nexora_backend.admin_site import admin_site
 from .models import (
     ScholarshipApplication, AcademicYear, Faculty, Major, Profile, 
-    Message, Resume, SocialAchievement, AnnualRanking, GrantQuota, 
+    Message, Resume, SocialAchievement, AnnualRanking, 
     Scholarship, ScholarshipRequirement, Announcement, ScholarshipRule, 
     StudentDocument
 )
@@ -191,8 +191,8 @@ class ProfileAdmin(ModelAdmin):
 
 @admin.register(StudentDocument, site=admin_site)
 class StudentDocumentAdmin(ModelAdmin):
-    list_display = ("student_name", "doc_type_name", "status", "created_at", "view_file")
-    list_filter = ("doc_type", "status", "created_at")
+    list_display = ("student_name", "doc_type_name", "status", "score", "academic_year", "created_at", "view_file")
+    list_filter = ("doc_type", "status", "academic_year", "created_at")
     search_fields = ("user__username", "user__email", "user__profile__full_name", "meta__note")
     readonly_fields = ("student_profile_link", "doc_type", "created_at", "display_meta", "display_file")
     
@@ -204,9 +204,13 @@ class StudentDocumentAdmin(ModelAdmin):
             "fields": ("display_meta", "display_file"),
         }),
         ("Qaror qabul qilish", {
-            "fields": ("status", "admin_note"),
+            "fields": ("status", "score", "academic_year", "admin_note"),
         }),
     )
+
+    def save_model(self, request, obj, form, change):
+        obj.full_clean()
+        super().save_model(request, obj, form, change)
 
     actions = ['approve_docs', 'reject_docs']
 
@@ -471,8 +475,7 @@ def export_ranking_excel(modeladmin, request, queryset):
         "Yo'nalish",
         "Talaba",
         "Umumiy ball",
-        "O'rin",
-        "Grant g'olibi"
+        "O'rin"
     ]
 
     ws.append(headers)
@@ -483,8 +486,7 @@ def export_ranking_excel(modeladmin, request, queryset):
             obj.major.name,
             obj.student.profile.full_name or obj.student.username,
             obj.total_score,
-            obj.rank,
-            "HA" if obj.is_grant_winner else "YO'Q"
+            obj.rank
         ])
 
     response = HttpResponse(
@@ -498,32 +500,6 @@ def export_ranking_excel(modeladmin, request, queryset):
 export_ranking_excel.short_description = "📥 Export selected to Excel"
 
 
-def export_grant_winners_pdf(modeladmin, request, queryset):
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename="grant_winners.pdf"'
-
-    doc = SimpleDocTemplate(response, pagesize=A4)
-    elements = []
-
-    styles = getSampleStyleSheet()
-
-    elements.append(Paragraph("Grant Winners List", styles['Heading1']))
-    elements.append(Spacer(1, 20))
-
-    winners = queryset.filter(is_grant_winner=True)
-
-    for obj in winners:
-        text = f"{obj.student.profile.full_name} - {obj.major.name} - Rank {obj.rank}"
-        elements.append(Paragraph(text, styles['Normal']))
-        elements.append(Spacer(1, 10))
-
-    doc.build(elements)
-
-    return response
-
-
-export_grant_winners_pdf.short_description = "📄 Export Grant Winners PDF"
-
 
 @admin.register(AnnualRanking, site=admin_site)
 class AnnualRankingAdmin(ModelAdmin):
@@ -533,14 +509,12 @@ class AnnualRankingAdmin(ModelAdmin):
         "major",
         "academic_year",
         "total_score",
-        "colored_rank",
-        "grant_status"
+        "colored_rank"
     )
 
     list_filter = (
         "academic_year",
-        "major",
-        "is_grant_winner"
+        "major"
     )
 
     search_fields = (
@@ -551,7 +525,7 @@ class AnnualRankingAdmin(ModelAdmin):
 
     ordering = ("major", "rank")
 
-    actions = [export_ranking_excel, export_grant_winners_pdf]
+    actions = [export_ranking_excel]
 
     readonly_fields = (
         "academic_year",
@@ -559,7 +533,6 @@ class AnnualRankingAdmin(ModelAdmin):
         "student_profile_link",
         "total_score",
         "rank",
-        "is_grant_winner",
         "achievement_breakdown"
     )
 
@@ -574,43 +547,35 @@ class AnnualRankingAdmin(ModelAdmin):
             return obj.student.username
     student_profile_link.short_description = "Talaba"
 
-    def grant_status(self, obj):
-        if obj.is_grant_winner:
-            return mark_safe(
-                '<span style="color:green;font-weight:bold;">🏆 GRANT</span>'
-            )
-        return mark_safe('<span style="color:gray;font-weight:bold;">Kontrakt</span>')
-    grant_status.short_description = "Grant"
-
     def achievement_breakdown(self, obj):
-        from core.logic import MAX_POINTS_MAP
+        from core.models import DOCUMENT_MAX_POINTS
         
         # Har bir kategoriya bo'yicha eng oxirgi tasdiqlangan hujjatlarni yig'amiz
-        final_achievements = []
-        for cat in range(1, 12):
-            latest = SocialAchievement.objects.filter(
+        final_docs = []
+        for doc_type_code in DOCUMENT_MAX_POINTS.keys():
+            latest = StudentDocument.objects.filter(
                 user=obj.student,
-                category=cat,
+                doc_type=doc_type_code,
                 status='approved',
                 academic_year=obj.academic_year
             ).order_by('-created_at', '-id').first()
             
             if latest:
-                final_achievements.append(latest)
+                final_docs.append(latest)
 
-        html = "<h3>Hisoblangan faolliklar (Eng oxirgi hujjatlar)</h3><ul>"
+        html = "<h3>Hisoblangan hujjatlar (Eng oxirgi hujjatlar)</h3><ul>"
 
-        for ach in final_achievements:
-            max_p = MAX_POINTS_MAP.get(ach.category, 5)
-            display_score = min(float(ach.score), float(max_p))
-            html += f"<li><b>{ach.get_category_display()}</b> — {display_score} ball (Hujjat bali: {ach.score})</li>"
+        for doc in final_docs:
+            max_p = DOCUMENT_MAX_POINTS.get(doc.doc_type, 0.0)
+            display_score = min(float(doc.score), float(max_p))
+            html += f"<li><b>{doc.get_doc_type_display()}</b> — {display_score} ball (Hujjat bali: {doc.score})</li>"
 
         html += "</ul>"
-        html += "<p style='color:gray; font-size: 12px;'>* Nizomga ko'ra har bir yo'nalish bo'yicha faqat eng oxirgi yuklangan hujjat bali inobatga olingan.</p>"
+        html += "<p style='color:gray; font-size: 12px;'>* Nizomga ko'ra har bir hujjat turi bo'yicha faqat eng oxirgi yuklangan hujjat bali inobatga olingan.</p>"
 
         return mark_safe(html)
 
-    achievement_breakdown.short_description = "Faolliklar haqida"
+    achievement_breakdown.short_description = "Hujjatlar haqida"
 
     def colored_rank(self, obj):
         if obj.rank == 1:
@@ -651,12 +616,6 @@ class AnnualRankingAdmin(ModelAdmin):
         extra_context["statistics_url"] = "statistics/"
         return super().changelist_view(request, extra_context=extra_context)
 
-
-@admin.register(GrantQuota, site=admin_site)
-class GrantQuotaAdmin(ModelAdmin):
-    list_display = ("major", "academic_year", "total_slots")
-    list_filter = ("academic_year", "major")
-    search_fields = ("major__name", "academic_year__name")
 
 
 @admin.register(AcademicYear, site=admin_site)

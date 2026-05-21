@@ -1,6 +1,6 @@
 from django.db.models import Sum, Q
 from django.contrib.auth.models import User
-from core.models import AnnualRanking, GrantQuota, Profile, SocialAchievement
+from core.models import AnnualRanking, Profile, StudentDocument, Major, DOCUMENT_MAX_POINTS
 
 
 def recalc_global_ranks():
@@ -15,32 +15,29 @@ def recalc_global_ranks():
 
 
 def generate_annual_ranking(year_id):
-    from core.logic import MAX_POINTS_MAP
     # Eski rankinglarni o‘chiramiz
     AnnualRanking.objects.filter(academic_year_id=year_id).delete()
 
-    quotas = GrantQuota.objects.filter(academic_year_id=year_id)
+    majors = Major.objects.all()
     
     new_rankings = []
 
-    for quota in quotas:
-        major = quota.major
+    for major in majors:
         students_list = User.objects.filter(profile__major=major)
         
         ranked_students = []
         for student in students_list:
-            total_capped_score = 0
-            for cat in range(1, 12):
-                latest_achievement = (
-                    SocialAchievement.objects
-                    .filter(user=student, category=cat, status='approved', academic_year_id=year_id)
+            total_capped_score = 0.0
+            for doc_type_code, max_allowed in DOCUMENT_MAX_POINTS.items():
+                latest_doc = (
+                    StudentDocument.objects
+                    .filter(user=student, doc_type=doc_type_code, status='approved', academic_year_id=year_id)
                     .order_by('-created_at', '-id')
                     .first()
                 )
                 
-                if latest_achievement:
-                    score = latest_achievement.score or 0
-                    max_allowed = MAX_POINTS_MAP.get(cat, 5)
+                if latest_doc:
+                    score = latest_doc.score or 0.0
                     total_capped_score += min(float(score), float(max_allowed))
             
             ranked_students.append({
@@ -59,8 +56,7 @@ def generate_annual_ranking(year_id):
                     major=major,
                     student=item['student'],
                     total_score=item['total_score'],
-                    rank=position,
-                    is_grant_winner=position <= quota.total_slots
+                    rank=position
                 )
             )
             position += 1

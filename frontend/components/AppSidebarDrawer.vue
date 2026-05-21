@@ -38,7 +38,7 @@
           to="/social"
           @click="$emit('close')"
         >
-          <i class="bi bi-person-workspace"></i> Ijtimoiy faollik
+          <i class="bi bi-person-workspace"></i> Portfolio
         </NuxtLink>
       </li>
 

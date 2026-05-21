@@ -12,24 +12,22 @@ from core.services.ranking import generate_annual_ranking
 
 def recalc_profile_xp(user):
     """
-    Recalculates a student's total XP based on their approved achievements in each category.
+    Recalculates a student's total XP (document rating) based on their approved StudentDocuments in each category.
     """
-    from core.logic import MAX_POINTS_MAP
+    from core.models import StudentDocument, DOCUMENT_MAX_POINTS
     
-    total_xp = 0
-    categories = range(1, 12)  # Categories from 1 to 11
+    total_xp = 0.0
     
-    for cat in categories:
-        latest_achievement = (
-            SocialAchievement.objects
-            .filter(user=user, category=cat, status='approved')
+    for doc_type_code, max_allowed in DOCUMENT_MAX_POINTS.items():
+        latest_doc = (
+            StudentDocument.objects
+            .filter(user=user, doc_type=doc_type_code, status='approved')
             .order_by('-created_at', '-id')
             .first()
         )
         
-        if latest_achievement:
-            score = latest_achievement.score or 0
-            max_allowed = MAX_POINTS_MAP.get(cat, 5)
+        if latest_doc:
+            score = latest_doc.score or 0.0
             total_xp += min(float(score), float(max_allowed))
         
     Profile.objects.filter(user=user).update(xp=total_xp)

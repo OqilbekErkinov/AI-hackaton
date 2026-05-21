@@ -330,38 +330,17 @@ class AnnualRanking(models.Model):
     total_score = models.FloatField(verbose_name="Umumiy ball")
     rank = models.IntegerField(verbose_name="Rank")
 
-    is_grant_winner = models.BooleanField(default=False, verbose_name="Grant g'olibimi?")
-
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Yaratilgan vaqti")
 
     class Meta:
         unique_together = ("academic_year", "major", "student")
         ordering = ["rank"]
-        verbose_name = "Grant uchun nomzodlar"
-        verbose_name_plural = "Grant uchun nomzodlar"
+        verbose_name = "Yillik reyting"
+        verbose_name_plural = "Yillik reytinglar"
 
     def __str__(self):
         return f"{self.student} - {self.rank}"
 
-class GrantQuota(models.Model):
-    academic_year = models.ForeignKey(
-        AcademicYear,
-        on_delete=models.CASCADE,
-        verbose_name="Akademik yil"
-    )
-    major = models.ForeignKey(
-        Major,
-        on_delete=models.CASCADE,
-        verbose_name="Yo'nalish"
-    )
-    total_slots = models.IntegerField(verbose_name="Grant joylari soni")
-
-    class Meta:
-        verbose_name = "Grant kvotasi"
-        verbose_name_plural = "Grant kvotalari"
-
-    def __str__(self):
-        return f"{self.major} - {self.total_slots} grant"
 
 
 
@@ -508,6 +487,19 @@ class Announcement(models.Model):
         super().save(*args, **kwargs)
 
 
+DOCUMENT_MAX_POINTS = {
+    "transcript": 30.0,
+    "language_cert": 20.0,
+    "article": 10.0,
+    "thesis": 10.0,
+    "publication": 10.0,
+    "ict_cert": 10.0,
+    "conference": 5.0,
+    "history_cert": 5.0,
+    "recommendation": 0.0,
+    "passport": 0.0,
+}
+
 class StudentDocument(models.Model):
     DOCUMENT_TYPES = [
         ("transcript", "Transcript / Baholar"),
@@ -531,6 +523,15 @@ class StudentDocument(models.Model):
     )
 
     meta = models.JSONField(blank=True, null=True, verbose_name="Meta ma'lumotlar")
+    score = models.FloatField(default=0.0, verbose_name="Ball")
+    academic_year = models.ForeignKey(
+        AcademicYear,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="documents",
+        verbose_name="Akademik yil"
+    )
 
     status = models.CharField(
         max_length=20,
@@ -554,6 +555,15 @@ class StudentDocument(models.Model):
     def __str__(self):
         return f"{self.user.username} - {self.get_doc_type_display()}"
 
+    def clean(self):
+        from django.core.exceptions import ValidationError
+        super().clean()
+        max_p = DOCUMENT_MAX_POINTS.get(self.doc_type, 0.0)
+        if self.score > max_p:
+            raise ValidationError(
+                f"Xatolik: {self.get_doc_type_display()} uchun maksimal ball {max_p}. Siz {self.score} ball kiritdingiz."
+            )
+
     def save(self, *args, **kwargs):
         # Rasmni siqish
         if self.file and not self.id:
@@ -561,6 +571,11 @@ class StudentDocument(models.Model):
             if ext in ['jpg', 'jpeg', 'png', 'webp']:
                 self.file = compress_image(self.file)
         
+        if not self.academic_year:
+            active_year = AcademicYear.objects.filter(is_active=True).first()
+            if active_year:
+                self.academic_year = active_year
+
         super().save(*args, **kwargs)
 
 

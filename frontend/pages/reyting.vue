@@ -97,9 +97,9 @@
 
     <div class="hero-card mb-4 shadow border-0 position-relative theme-hero-card">
       <div class="hero-inner position-relative z-1">
-        <h1 class="hero-title">Ijtimoiy Reyting</h1>
+        <h1 class="hero-title">Hujjatlar Reytingi</h1>
         <p class="hero-sub">
-          Talabalarning ijtimoiy faollik indeksi (100 ballik tizim) bo'yicha
+          Talabalarning taqdim etgan akademik va ilmiy hujjatlari (100 ballik tizim) bo'yicha
           o'rinlari
         </p>
 

@@ -202,7 +202,8 @@ class StudentDocumentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = StudentDocument
-        fields = ["id", "doc_type", "doc_type_display", "file", "file_url", "meta", "status", "admin_note", "created_at"]
+        fields = ["id", "doc_type", "doc_type_display", "file", "file_url", "meta", "status", "score", "academic_year", "admin_note", "created_at"]
+        read_only_fields = ["status", "score", "academic_year", "admin_note", "created_at"]
 
     def to_internal_value(self, data):
         # MultiPartParser sends QueryDict, which is immutable and expects strings.
