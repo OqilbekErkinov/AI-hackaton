@@ -1,0 +1,25 @@
+{% extends "admin/index.html" %}
+{% load i18n static %}
+
+{% block content %}
+    {{ block.super }}
+
+    {% if today_apps_count is not None %}
+    <div class="row">
+        <div class="col-lg-3 col-6">
+            <div class="small-box bg-info">
+                <div class="inner">
+                    <h3>{{ today_apps_count }}</h3>
+                    <p>Bugungi arizalar soni</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-file-signature"></i>
+                </div>
+                <a href="/admin/core/scholarshipapplication/?created_at__year={{ now|date:'Y' }}&created_at__month={{ now|date:'m' }}&created_at__day={{ now|date:'d' }}" class="small-box-footer">
+                    Batafsil <i class="fas fa-arrow-circle-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+{% endblock %}
