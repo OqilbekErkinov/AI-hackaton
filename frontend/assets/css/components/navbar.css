@@ -1,0 +1,53 @@
+/* Navbar Styles */
+.navbar {
+  background-color: var(--bg-card) !important;
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm) !important;
+  transition: var(--transition-base);
+}
+
+.navbar .brand {
+  color: var(--primary);
+  font-weight: 700;
+  font-size: 1.25rem;
+}
+
+.navbar .brand span {
+  color: var(--text-main);
+}
+
+.navbar .breadcrumb-item.active {
+  color: var(--text-muted);
+}
+
+.icon-btn {
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-card);
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-main);
+  transition: var(--transition-base);
+}
+
+.icon-btn:hover {
+  background-color: var(--bg-app);
+  color: var(--primary);
+  border-color: var(--primary-light);
+}
+
+/* small badge styles for messages */
+.badge-notif {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background-color: var(--error);
+  color: #fff;
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}

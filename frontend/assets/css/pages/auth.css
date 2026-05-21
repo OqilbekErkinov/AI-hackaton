@@ -1,0 +1,75 @@
+/* Auth Pages Styles */
+
+.auth-card {
+  max-width: 480px;
+  margin: 60px auto;
+  padding: 40px;
+  border-radius: 20px;
+  background-color: var(--bg-card);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+}
+
+.auth-card h3 {
+  font-weight: 700;
+  margin-bottom: 24px;
+  text-align: center;
+  color: var(--text-main);
+}
+
+.auth-card .form-control {
+  background-color: var(--bg-app);
+  border-color: var(--border-color);
+  color: var(--text-main);
+  padding: 12px 16px;
+  border-radius: 10px;
+}
+
+.auth-card .form-control:focus {
+  border-color: var(--primary);
+  background-color: var(--bg-card);
+  box-shadow: 0 0 0 4px rgba(var(--primary-rgb), 0.1);
+}
+
+.auth-card .btn-bg {
+  background-color: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 20px;
+  font-weight: 600;
+  transition: var(--transition-base);
+  width: 100%;
+}
+
+.auth-card .btn-bg:hover {
+  background-color: var(--primary-light);
+  transform: translateY(-1px);
+}
+
+.auth-card .btn-bg2 {
+    background-color: var(--bg-app);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 10px 20px;
+    font-weight: 600;
+    transition: var(--transition-base);
+    width: 100%;
+}
+
+.auth-card .btn-bg2:hover {
+    background-color: var(--border-color);
+}
+
+.auth-card .btn-outline-secondary {
+    border-radius: 10px;
+    padding: 10px 20px;
+    width: 100%;
+}
+
+.auth-card .text-danger, .auth-card .text-success {
+    font-size: 0.9rem;
+    text-align: center;
+}

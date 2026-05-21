@@ -1,0 +1,241 @@
+<template>
+  <footer class="rankedu-footer">
+    <!-- Top Glass Divider -->
+    <div class="footer-glass-divider"></div>
+
+    <div class="footer-container">
+      <div class="footer-top row g-4">
+        <!-- Brand Section -->
+        <div class="col-lg-4 col-md-12 pe-lg-5">
+          <NuxtLink to="/" class="footer-brand">
+            <!-- <img src="/images/logo.png" alt="RankEdu Logo" class="brand-logo me-2" /> -->
+            <span>RankEdu</span>
+          </NuxtLink>
+          <p class="brand-desc mt-3">
+            O'zbekiston talabalari uchun intellektual va ijtimoiy rivojlanish platformasi. AI texnologiyalari yordamida akademik va kasbiy muvaffaqiyatga erishing.
+          </p>
+          <div class="social-links d-flex gap-3 mt-4">
+            <a href="#" class="social-icon" title="Telegram"><i class="bi bi-telegram"></i></a>
+            <a href="#" class="social-icon" title="Instagram"><i class="bi bi-instagram"></i></a>
+            <a href="#" class="social-icon" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
+            <a href="#" class="social-icon" title="YouTube"><i class="bi bi-youtube"></i></a>
+          </div>
+        </div>
+
+        <!-- Links Grid -->
+        <div class="col-lg-8 col-md-12">
+          <div class="row g-4">
+            <!-- Platform -->
+            <div class="col-md-4 col-6">
+              <h6 class="footer-title">Platforma</h6>
+              <ul class="footer-links">
+                <li><NuxtLink to="/">Bosh sahifa</NuxtLink></li>
+                <li><NuxtLink to="/reyting">Reyting</NuxtLink></li>
+                <li><NuxtLink to="/social">Ijtimoiy faollik</NuxtLink></li>
+                <li><NuxtLink to="/scholarship">Akademik faoliyat</NuxtLink></li>
+              </ul>
+            </div>
+
+            <!-- AI Services -->
+            <div class="col-md-4 col-6">
+              <h6 class="footer-title">AI Xizmatlar</h6>
+              <ul class="footer-links">
+                <li><NuxtLink to="/ai-assistant">AI Yordamchi</NuxtLink></li>
+                <li><NuxtLink to="/mentor">AI Mentor</NuxtLink></li>
+                <li><NuxtLink to="/cv-generator">CV Generator</NuxtLink></li>
+                <li><NuxtLink to="/messenger">Messenger</NuxtLink></li>
+              </ul>
+            </div>
+
+            <!-- Support -->
+            <div class="col-md-4 col-12">
+              <h6 class="footer-title">Bog'lanish</h6>
+              <ul class="footer-links">
+                <li><NuxtLink to="/service">Yordam markazi</NuxtLink></li>
+                <li><NuxtLink to="/announcement">E'lonlar</NuxtLink></li>
+                <li><a href="mailto:info@rankedu.uz">info@rankedu.uz</a></li>
+                <li class="mt-2">
+                  <span class="d-flex align-items-center gap-2 small opacity-75">
+                    <i class="bi bi-geo-alt"></i> Farg'ona sh.
+                  </span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <hr class="footer-hr" />
+
+      <!-- Footer Bottom -->
+      <div class="footer-bottom d-flex flex-wrap justify-content-between align-items-center gap-3 py-4">
+        <div class="footer-copyright">
+          © 2026 <strong>RankEdu</strong>. Barcha huquqlar himoyalangan.
+        </div>
+        <div class="footer-legal d-flex gap-4">
+          <NuxtLink to="/privacy">Maxfiylik siyosati</NuxtLink>
+          <NuxtLink to="/terms">Foydalanish shartlari</NuxtLink>
+        </div>
+      </div>
+    </div>
+  </footer>
+</template>
+
+<style>
+/* AppFooter Styles */
+.rankedu-footer {
+  font-family: 'Outfit', sans-serif;
+  background-color: var(--primary);
+  color: var(--text-main);
+  position: relative;
+  overflow: hidden;
+  margin-left: 72px; /* Sidebar mini width */
+  transition: var(--transition-base);
+}
+
+.footer-glass-divider {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footer-container {
+  max-width: 1250px;
+  margin: 0 auto;
+  padding: 60px 40px 0 40px;
+}
+
+.footer-brand {
+  display: flex;
+  align-items: center;
+  font-size: 28px;
+  font-weight: 800;
+  text-decoration: none;
+  color: var(--text-on-primary);
+  letter-spacing: -1px;
+}
+
+.brand-logo {
+  height: 48px;
+  width: auto;
+  object-fit: contain;
+}
+
+.brand-desc {
+  font-size: 14px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 300;
+}
+
+.social-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  text-decoration: none;
+  font-size: 18px;
+  transition: var(--transition-base);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.social-icon:hover {
+  background: #fff;
+  color: var(--primary);
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(255, 255, 255, 0.1);
+}
+
+.footer-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 24px;
+  position: relative;
+  padding-bottom: 8px;
+}
+
+.footer-title::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 30px;
+  height: 2px;
+  background: var(--primary-light);
+  border-radius: 2px;
+}
+
+.footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-links li {
+  margin-bottom: 12px;
+}
+
+.footer-links a {
+  text-decoration: none;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 14px;
+  font-weight: 400;
+  transition: var(--transition-base);
+}
+
+.footer-links a:hover {
+  color: #fff;
+  padding-left: 5px;
+}
+
+.footer-hr {
+  margin-top: 50px;
+  border: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.footer-bottom {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.footer-copyright strong {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.footer-legal a {
+  text-decoration: none;
+  color: inherit;
+  transition: var(--transition-base);
+}
+
+.footer-legal a:hover {
+  color: #fff;
+}
+
+@media (max-width: 991px) {
+  .rankedu-footer {
+    margin-left: 0;
+  }
+  .footer-container {
+    padding: 40px 24px 0 24px;
+  }
+}
+
+@media (max-width: 767px) {
+  .footer-bottom {
+    flex-direction: column;
+    text-align: center;
+  }
+  .footer-legal {
+    justify-content: center;
+  }
+}
+</style>
+

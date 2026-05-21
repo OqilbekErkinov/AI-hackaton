@@ -1,0 +1,114 @@
+/* Social Achievement Page Styles */
+.social-page {
+  background-color: var(--bg-app) !important;
+  min-height: 100vh;
+}
+
+.main-header {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+  border-radius: 1rem !important;
+}
+
+.score-badge {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(5px);
+}
+
+/* CARDS */
+.criterion-card {
+  transition: var(--transition-base);
+  background-color: var(--bg-card);
+  border-radius: 1rem !important;
+}
+
+.shadow-hover:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-md) !important;
+}
+
+/* ICON BOX */
+.icon-box {
+  width: 55px;
+  height: 55px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+}
+
+/* EVIDENCE ROWS */
+.evidence-row {
+  border: 1px dashed var(--border-color);
+  background-color: var(--bg-app);
+  transition: var(--transition-base);
+}
+
+.evidence-preview {
+  width: 45px;
+  height: 45px;
+  flex-shrink: 0;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-card);
+}
+
+/* ACTION BOX */
+.action-box {
+  background-color: var(--bg-app);
+  border-radius: 1rem;
+}
+
+/* BUTTONS */
+.btn-custom {
+  background-color: var(--primary);
+  color: #fff;
+  border: 2px solid var(--primary);
+  transition: var(--transition-base);
+}
+
+.btn-custom:hover {
+  background-color: transparent;
+  color: var(--primary);
+}
+
+.btn-custom:disabled {
+  background-color: var(--border-color);
+  border-color: var(--border-color);
+  color: var(--text-muted);
+}
+
+/* UPLOAD AREA */
+.upload-area {
+  border-style: dashed !important;
+  cursor: pointer;
+  transition: background 0.3s;
+  background-color: var(--bg-app);
+  border-width: 2px !important;
+}
+
+.upload-area:hover {
+  background-color: var(--border-color) !important;
+}
+
+/* MISC */
+.x-small {
+  font-size: 0.75rem;
+}
+
+.extra-small-pill {
+  font-size: 0.65rem;
+  padding: 2px 6px;
+  color: var(--text-main);
+}
+
+.toast {
+  border-radius: 12px;
+  font-weight: 500;
+  box-shadow: var(--shadow-md);
+}
+
+@media (max-width: 768px) {
+  .main-header .display-5 {
+    font-size: 1.75rem;
+  }
+}

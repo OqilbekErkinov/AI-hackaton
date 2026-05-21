@@ -1,0 +1,334 @@
+/* Reyting (Leaderboard) Page Styles */
+
+.leaderboard-page {
+  margin: 0 auto;
+}
+
+/* CARDS */
+.leaderboard-page .card {
+  background-color: var(--bg-card);
+  transition: var(--transition-base);
+}
+
+/* FILTERS */
+.filter-static {
+  background: var(--bg-app);
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-weight: 600;
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+}
+
+.custom-select {
+  position: relative;
+  width: 100%;
+}
+
+.custom-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background-color: var(--bg-card);
+  color: var(--text-main);
+  cursor: pointer;
+  transition: var(--transition-base);
+}
+
+.custom-trigger:hover {
+  border-color: var(--primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.select-text {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 14px;
+}
+
+.select-arrow {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.custom-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  overflow: hidden;
+  z-index: 100;
+  max-height: 240px;
+  overflow-y: auto;
+  box-shadow: var(--shadow-md);
+  margin-top: 4px;
+}
+
+.custom-item {
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: var(--transition-base);
+  color: var(--text-main);
+  font-size: 14px;
+}
+
+.custom-item:hover,
+.custom-item.active {
+  background-color: var(--primary);
+  color: #fff;
+}
+
+/* HERO CARD (Leaderboard Podium) */
+.leaderboard-page .hero-card {
+  border-radius: 24px;
+  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+  color: #fff;
+  padding: 40px;
+  min-height: 500px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.hero-inner {
+  max-width: 1300px;
+  /* margin: 0 auto; */
+}
+
+.hero-title {
+  font-size: 46px;
+  font-weight: 800;
+  margin: 0 0 6px 0;
+  /* Adjusted for better symmetry */
+}
+
+@media (min-width: 768px) {
+  .hero-title {
+    margin-left: 8.4rem;
+  }
+
+  .hero-sub {
+    margin-left: 4.4rem;
+  }
+}
+
+.hero-sub {
+  opacity: 0.95;
+  margin-bottom: 18px;
+}
+
+/* TOP STRIP: AVATARS */
+.top-strip {
+  display: flex;
+  align-items: flex-end;
+  gap: 32px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.top-avatar-wrap {
+  text-align: center;
+  min-width: 180px;
+  transition: var(--transition-base);
+}
+
+.ava-outer {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  margin: 0 auto;
+  overflow: visible;
+}
+
+.ava-mask {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 6px solid rgba(255, 255, 255, 0.65);
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-sm);
+}
+
+.ava-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ava-initials {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  font-weight: 800;
+  color: #fff;
+}
+
+.ava-badge {
+  position: absolute;
+  top: -14px;
+  right: -14px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #fff7cc, #ffd54f);
+  color: #7a4a00;
+  border-radius: 50%;
+  font-size: 16px;
+  font-weight: 700;
+  border: 2px solid #ffffff;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);
+  z-index: 10;
+}
+
+.ava-name {
+  margin-top: 10px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.xp-pill {
+  background: rgba(255, 255, 255, 0.95);
+  color: #b46a00;
+  padding: 6px 12px;
+  border-radius: 18px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  box-shadow: var(--shadow-sm);
+}
+
+/* PODIUM POSITIONS */
+.top-avatar-wrap.is-first {
+  order: 2;
+  transform: translateY(-14px);
+}
+
+.top-avatar-wrap.is-first .ava-outer {
+  width: 150px;
+  height: 150px;
+}
+
+.top-avatar-wrap.is-first .ava-name {
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.top-avatar-wrap:nth-child(2) {
+  order: 1;
+}
+
+.top-avatar-wrap:nth-child(3) {
+  order: 3;
+}
+
+/* LIST VIEW */
+.rank-num {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background-color: var(--bg-app);
+  color: var(--text-main);
+  font-weight: 700;
+  border: 1px solid var(--border-color);
+}
+
+.ava.small {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background-color: #fff;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+}
+
+.level-pill {
+  background: rgba(var(--primary-rgb), 0.05);
+  color: var(--primary);
+  padding: 6px 12px;
+  border-radius: 18px;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.list-group-item {
+  background-color: var(--bg-card) !important;
+  color: var(--text-main);
+  border-color: var(--border-color) !important;
+  transition: var(--transition-base);
+}
+
+.list-group-item:hover {
+  background-color: var(--bg-app) !important;
+  transform: translateX(5px);
+}
+
+/* PAGINATION */
+.page-link {
+  background-color: var(--bg-card);
+  color: var(--text-main);
+  border: 1px solid var(--border-color) !important;
+  transition: var(--transition-base);
+}
+
+.page-link:hover {
+  background-color: var(--primary);
+  color: #fff;
+  border-color: var(--primary) !important;
+}
+
+.page-item.disabled .page-link {
+  background-color: var(--bg-app);
+  color: var(--text-muted);
+}
+
+/* DECORATION */
+.trophy-img {
+  /* max-width: 200px; */
+  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.2));
+}
+
+@media (max-width: 991px) {
+  .hero-card {
+    padding: 30px;
+  }
+
+  .top-strip {
+    gap: 18px;
+  }
+
+  .trophy-img {
+    display: none !important;
+  }
+
+  .ava-outer {
+    width: 92px;
+    height: 92px;
+  }
+
+  .top-avatar-wrap.is-first .ava-outer {
+    width: 110px;
+    height: 110px;
+  }
+}

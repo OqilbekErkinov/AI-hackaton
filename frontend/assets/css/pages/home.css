@@ -1,0 +1,304 @@
+/* Home Page & Hero Styles */
+
+/* ================= SECTION HEADERS ================= */
+.h-section {
+  padding-bottom: 100px;
+  position: relative;
+}
+
+.h-section-title {
+  font-size: 2.6rem;
+  font-weight: 800;
+  color: var(--text-main);
+  text-align: left;
+  margin-bottom: 0;
+  position: relative;
+  margin-left: 1rem;
+}
+
+.h-section-title::after {
+  content: '';
+  display: block;
+  width: 50px;
+  height: 5px;
+  background: var(--primary);
+  margin-top: 10px;
+  border-radius: 99px;
+}
+
+.container-wide {
+  max-width: 1440px;
+}
+
+/* ================= ANNOUNCEMENT SLIDER ================= */
+.h-announcements {
+  background: var(--bg-app);
+  padding-top: 0rem;
+  /* padding-bottom: 10rem; */
+}
+
+.carousel-nav-btns {
+  gap: 15px;
+}
+
+.nav-btn {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  cursor: pointer;
+  transition: var(--transition-base);
+  box-shadow: var(--shadow-sm);
+}
+
+.nav-btn:hover {
+  background: var(--primary);
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.carousel-viewport {
+  overflow: hidden;
+  margin: 0 -15px;
+  padding: 10px 0 40px;
+}
+
+.carousel-track {
+  display: flex;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.carousel-card-wrapper {
+  padding: 0 15px;
+  flex-shrink: 0;
+}
+
+.ann-card {
+  height: 100%;
+  border-radius: 24px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: var(--transition-base);
+}
+
+.ann-card:hover {
+  transform: translateY(-8px);
+}
+
+.ann-img-box {
+  position: relative;
+  height: 220px;
+  overflow: hidden;
+}
+
+.ann-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.ann-card:hover .ann-image {
+  transform: scale(1.08);
+}
+
+.ann-image-stub {
+  width: 100%;
+  height: 100%;
+  background: var(--primary-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 40px;
+}
+
+.ann-tag-pill {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  background: var(--primary);
+  color: #fff;
+  padding: 4px 14px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.ann-body {
+  padding: 25px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.ann-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: var(--text-main);
+}
+
+.ann-text {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  margin-bottom: 20px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  flex-grow: 1;
+}
+
+.ann-link {
+  font-weight: 700;
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ================= WHY RANKEDU (INDIVIDUAL CARDS) ================= */
+.h-features {
+  /* background: var(--bg-card); */
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 30px;
+}
+
+.feature-card-premium {
+  padding: 45px 35px;
+  border-radius: 30px;
+  text-align: center;
+  transition: var(--transition-base);
+}
+
+.feature-card-premium:hover {
+  transform: translateY(-10px);
+}
+
+.feature-icon-box {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+  color: #fff;
+  border-radius: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 34px;
+  margin: 0 auto 30px;
+  box-shadow: 0 10px 25px rgba(var(--primary-rgb), 0.2);
+}
+
+.feature-card-premium h4 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin-bottom: 18px;
+  color: var(--text-main);
+}
+
+.feature-card-premium p {
+  color: var(--text-secondary);
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+/* ================= SCHOLARSHIPS ================= */
+.h-scholarships {
+  background: var(--bg-app);
+}
+
+.sch-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 30px;
+}
+
+.sch-card-premium {
+  padding: 35px;
+  border-radius: 28px;
+  transition: var(--transition-base);
+  height: 100%;
+}
+
+.sch-card-premium:hover {
+  transform: translateY(-8px);
+}
+
+.sch-meta {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.sch-deadline {
+  color: #eb4d4b;
+}
+
+.sch-amount {
+  color: #6ab04c;
+}
+
+.sch-title-premium {
+  font-size: 1.45rem;
+  font-weight: 800;
+  margin-bottom: 18px;
+  color: var(--text-main);
+}
+
+.sch-desc-premium {
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 30px;
+}
+
+.h-btn-premium {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 30px;
+  background: var(--primary);
+  color: #fff;
+  border-radius: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: var(--transition-base);
+}
+
+.h-btn-premium:hover {
+  background: var(--primary-dark);
+  box-shadow: 0 8px 15px rgba(var(--primary-rgb), 0.3);
+  color: #fff;
+}
+
+/* ================= MEDIA QUERIES ================= */
+@media (max-width: 991px) {
+  .h-section-title {
+    font-size: 2.2rem;
+  }
+
+  .h-section {
+    padding: 80px 0;
+  }
+}
+
+@media (max-width: 767px) {
+  .h-section-title {
+    font-size: 1.8rem;
+  }
+}

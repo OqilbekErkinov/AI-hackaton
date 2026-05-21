@@ -1,0 +1,121 @@
+/* Profiles specific styles */
+
+.documents-page {
+  max-width: 800px;
+  margin: auto;
+  padding: 32px;
+}
+
+.documents-page .title {
+  font-size: 2rem;
+  font-weight: 850;
+  margin-bottom: 24px;
+  color: var(--primary);
+  letter-spacing: -1px;
+}
+
+.upload-card {
+  display: flex;
+  gap: 12px;
+  background-color: var(--bg-card);
+  padding: 24px;
+  border-radius: 18px;
+  margin-bottom: 32px;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.upload-card select,
+.upload-card input {
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-app);
+  color: var(--text-main);
+  transition: var(--transition-base);
+}
+
+.upload-card select:focus,
+.upload-card input:focus {
+    border-color: var(--primary);
+    outline: none;
+}
+
+.upload-card button {
+  background-color: var(--primary);
+  color: white;
+  padding: 10px 24px;
+  border-radius: 12px;
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition-base);
+}
+
+.upload-card button:hover {
+  background-color: var(--primary-light);
+  transform: translateY(-2px);
+}
+
+.doc-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.doc-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--bg-card);
+  padding: 18px 24px;
+  border-radius: 16px;
+  border: 1px solid var(--border-color);
+  transition: var(--transition-base);
+}
+
+.doc-card:hover {
+    transform: translateX(5px);
+    border-color: var(--primary);
+    box-shadow: var(--shadow-sm);
+}
+
+.doc-type {
+  font-weight: 750;
+  margin-bottom: 4px;
+  color: var(--text-main);
+  text-transform: capitalize;
+}
+
+.doc-card a {
+    color: var(--primary);
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.doc-card a:hover {
+    text-decoration: underline;
+}
+
+.delete-btn {
+  background-color: #fee2e2;
+  color: #ef4444;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition-base);
+}
+
+.delete-btn:hover {
+  background-color: #ef4444;
+  color: #fff;
+  transform: scale(1.1);
+}
