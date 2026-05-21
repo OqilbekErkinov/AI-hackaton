@@ -45,6 +45,24 @@ onMounted(async () => {
   }
 });
 
+function formatSigninError(e: any): string {
+  if (e?.message === "Network Error" || e?.code === "ERR_NETWORK" || e?.message?.includes("Network Error")) {
+    return "Server bilan aloqa bog'lab bo'lmadi. Iltimos, server ishlayotganligini yoki internet aloqangizni tekshiring.";
+  }
+  const r = e?.response?.data;
+  if (r) {
+    if (typeof r === "string") return r;
+    if (r.detail) {
+      if (r.detail.includes("No active account found") || r.detail.includes("credentials")) {
+        return "Email yoki parol noto'g'ri. Iltimos, tekshirib qaytadan urinib ko'ring.";
+      }
+      return r.detail;
+    }
+    return JSON.stringify(r);
+  }
+  return e?.message || "Tizimga kirishda kutilmagan xatolik yuz berdi.";
+}
+
 async function onSubmit() {
   err.value = null;
   loading.value = true;
@@ -55,8 +73,7 @@ async function onSubmit() {
       router.push("/");
     }
   } catch (e: any) {
-    // e obyektini formatAxiosError qaytarganidek {status,data,message}
-    err.value = e?.message || JSON.stringify(e?.data || e);
+    err.value = formatSigninError(e);
   } finally {
     loading.value = false;
   }

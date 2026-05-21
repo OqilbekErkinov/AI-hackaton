@@ -81,13 +81,55 @@ function onAvatar(e: Event) {
   reader.readAsDataURL(f);
 }
 
+function translateError(msg: string): string {
+  let text = msg;
+  if (text.includes("This password is too common")) {
+    text = "Bu parol juda oddiy va keng tarqalgan. Iltimos, murakkabroq parol tanlang.";
+  } else if (text.includes("too similar to the username")) {
+    text = "Parol foydalanuvchi nomiga (email boshlang'ich qismiga) juda o'xshash bo'lmasligi kerak.";
+  } else if (text.includes("too short")) {
+    text = "Parol juda qisqa. Kamida 8 ta belgidan iborat bo'lishi kerak.";
+  } else if (text.includes("entirely numeric")) {
+    text = "Parol faqat raqamlardan iborat bo'lmasligi kerak.";
+  } else if (text.includes("user with this username already exists")) {
+    text = "Ushbu elektron pochta egasi allaqachon ro'yxatdan o'tgan.";
+  }
+  return text;
+}
+
+function formatValidationError(data: any): string {
+  if (!data) return "Noma'lum xatolik yuz berdi";
+  if (typeof data === "string") return data;
+  if (data.detail) return data.detail;
+  if (data.message) return data.message;
+
+  const errors: string[] = [];
+  for (const [key, value] of Object.entries(data)) {
+    let fieldName = key;
+    if (key === "fullname") fieldName = "To'liq ism";
+    else if (key === "email") fieldName = "Elektron pochta";
+    else if (key === "phone") fieldName = "Telefon raqami";
+    else if (key === "password") fieldName = "Parol";
+
+    if (Array.isArray(value)) {
+      const translatedVals = value.map(val => translateError(String(val)));
+      errors.push(`${fieldName}: ${translatedVals.join(", ")}`);
+    } else {
+      errors.push(`${fieldName}: ${translateError(String(value))}`);
+    }
+  }
+
+  if (errors.length > 0) {
+    return errors.join(" | ");
+  }
+  return JSON.stringify(data);
+}
+
 async function onSubmit() {
   err.value = null;
   message.value = null;
   loading.value = true;
   try {
-    // yuborishda AVATAR fayl mavjud bo'lsa faylni yuboramiz,
-    // mavjud bo'lmasa avarPreview (dataURL)ni yuboramiz (backend formdata qabul qiladi)
     const res = await auth.register({
       fullname: fullname.value,
       email: email.value,
@@ -98,29 +140,19 @@ async function onSubmit() {
     });
 
     if (res && (res.data || res.data?.user)) {
-      // muvaffaqiyat
       message.value = "Roʻyxatdan oʻtish muvaffaqiyatli.";
-      // agar token qaytilgan bo'lsa yoki session bo'lsa, redirect qilamiz
       if (res.data?.access || res.data?.token || auth.user.value) {
         router.push("/profile");
       }
     } else if (res && res.error) {
-      // handle axios response error object
-      err.value =
-        res.error?.detail ||
-        res.error?.message ||
-        JSON.stringify(res.error) ||
-        "Roʻyxatdan oʻtishda xato";
+      err.value = formatValidationError(res.error);
     } else {
       err.value = "Roʻyxatdan oʻtishda noma'lum xato yuz berdi";
     }
   } catch (e: any) {
-    // e.response?.data ni ko'rib chiqamiz
     const r = e?.response?.data;
     if (r) {
-      if (typeof r === "string") err.value = r;
-      else if (r?.detail) err.value = r.detail;
-      else err.value = JSON.stringify(r);
+      err.value = formatValidationError(r);
     } else {
       err.value = e?.message || String(e);
     }
