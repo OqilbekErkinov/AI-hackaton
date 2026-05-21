@@ -33,8 +33,8 @@
 
     <div class="hero">
       <div class="heroT">
-        <h2>RankEdu</h2>
-        <h2>RankEdu</h2>
+        <h2>Nexora</h2>
+        <h2>Nexora</h2>
       </div>
     </div>
 

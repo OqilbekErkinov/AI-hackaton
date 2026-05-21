@@ -4,7 +4,7 @@
       <Hero style="" />
     </section>
 
-        <!-- ✨ SECTION 2: WHY RANKEDU? (INDIVIDUAL GLASS CARDS) -->
+        <!-- ✨ SECTION 2: WHY NEXORA? (INDIVIDUAL GLASS CARDS) -->
     <section class="h-section h-features" style="margin-top: -6rem; z-index: 100;">
       <div class="container">
         <h2 class="h-section-title mb-5">Nega bizni tanlashadi?</h2>

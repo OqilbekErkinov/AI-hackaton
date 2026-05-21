@@ -261,7 +261,7 @@ const services = ref([
     catId: 'life',
     title: 'Talabalar uchun Chegirmalar',
     description: `Kafe, do'konlar va onlayn xizmatlarda talabalar uchun eksklyuziv takliflar.`,
-    longDescription: `RankEdu qatnashchisi bo'lganingiz uchun maxsus promo-kodlar va chegirmalardan foydalaning.`,
+    longDescription: `Nexora qatnashchisi bo'lganingiz uchun maxsus promo-kodlar va chegirmalardan foydalaning.`,
     icon: 'bi bi-percent',
     type: 'Benefits',
     typeColor: 'bg-soft-cyan',

@@ -1,5 +1,5 @@
 <template>
-  <div class="rankedu">
+  <div class="nexora">
     <!-- NAVBAR -->
     <AppNavbar @toggle-sidebar="toggleSidebar" />
     <div class="app-body">

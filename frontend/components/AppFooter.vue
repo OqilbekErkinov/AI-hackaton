@@ -1,5 +1,5 @@
 <template>
-  <footer class="rankedu-footer">
+  <footer class="nexora-footer">
     <!-- Top Glass Divider -->
     <div class="footer-glass-divider"></div>
 
@@ -8,8 +8,8 @@
         <!-- Brand Section -->
         <div class="col-lg-4 col-md-12 pe-lg-5">
           <NuxtLink to="/" class="footer-brand">
-            <!-- <img src="/images/logo.png" alt="RankEdu Logo" class="brand-logo me-2" /> -->
-            <span>RankEdu</span>
+            <!-- <img src="/images/logo.png" alt="Nexora Logo" class="brand-logo me-2" /> -->
+            <span>Nexora</span>
           </NuxtLink>
           <p class="brand-desc mt-3">
             O'zbekiston talabalari uchun intellektual va ijtimoiy rivojlanish platformasi. AI texnologiyalari yordamida akademik va kasbiy muvaffaqiyatga erishing.
@@ -53,7 +53,7 @@
               <ul class="footer-links">
                 <li><NuxtLink to="/service">Yordam markazi</NuxtLink></li>
                 <li><NuxtLink to="/announcement">E'lonlar</NuxtLink></li>
-                <li><a href="mailto:info@rankedu.uz">info@rankedu.uz</a></li>
+                <li><a href="mailto:info@nexora.uz">info@nexora.uz</a></li>
                 <li class="mt-2">
                   <span class="d-flex align-items-center gap-2 small opacity-75">
                     <i class="bi bi-geo-alt"></i> Farg'ona sh.
@@ -70,7 +70,7 @@
       <!-- Footer Bottom -->
       <div class="footer-bottom d-flex flex-wrap justify-content-between align-items-center gap-3 py-4">
         <div class="footer-copyright">
-          © 2026 <strong>RankEdu</strong>. Barcha huquqlar himoyalangan.
+          © 2026 <strong>Nexora</strong>. Barcha huquqlar himoyalangan.
         </div>
         <div class="footer-legal d-flex gap-4">
           <NuxtLink to="/privacy">Maxfiylik siyosati</NuxtLink>
@@ -83,7 +83,7 @@
 
 <style>
 /* AppFooter Styles */
-.rankedu-footer {
+.nexora-footer {
   font-family: 'Outfit', sans-serif;
   background-color: var(--primary);
   color: var(--text-main);
@@ -220,7 +220,7 @@
 }
 
 @media (max-width: 991px) {
-  .rankedu-footer {
+  .nexora-footer {
     margin-left: 0;
   }
   .footer-container {

@@ -28,7 +28,7 @@ def get_admin_context():
     if active_year:
         grant_candidates = AnnualRanking.objects.filter(academic_year=active_year).order_by('rank')[:15]
 
-    summary = f"--- RANKEDU PLATFORMA ANALITIKASI ---\n"
+    summary = f"--- NEXORA PLATFORMA ANALITIKASI ---\n"
     summary += f"Joriy faol yil: {active_year.name if active_year else 'Noma`lum'}\n"
     summary += f"Jami foydalanuvchilar: {user_count}\n\n"
     
@@ -60,7 +60,7 @@ def ask_admin_ai(admin_user, admin_message):
     context = get_admin_context()
 
     system_instruction = f"""
-Siz RankEdu platformasining "Bosh AI Tahlilchisi" (Chief Data Analyst)siz.
+Siz Nexora platformasining "Bosh AI Tahlilchisi" (Chief Data Analyst)siz.
 Administratorga tizimdagi tendensiyalar, muammolar va yutuqlar haqida chuqur tahlil berishingiz kerak.
 
 SIZGA TAQDIM ETILAYOTGAN JORIY MA'LUMOTLAR:

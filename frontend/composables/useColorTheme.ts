@@ -7,7 +7,7 @@ export const useColorTheme = () => {
       light: 'light',
       dark: 'dark',
     },
-    storageKey: 'rankedu-theme',
+    storageKey: 'nexora-theme',
   })
 
   return {

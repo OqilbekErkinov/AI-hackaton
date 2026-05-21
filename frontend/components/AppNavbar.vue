@@ -16,8 +16,8 @@
           <ol class="breadcrumb mb-0">
             <li class="breadcrumb-item">
               <NuxtLink to="/" class="text-decoration-none fw-semibold brand d-flex align-items-center gap-2">
-              <!-- <img src="/images/logo.png" alt="RankEdu" style="height: 32px; width: auto;" /> -->
-              <span>RankEdu</span>
+              <!-- <img src="/images/logo.png" alt="Nexora" style="height: 32px; width: auto;" /> -->
+              <span>Nexora</span>
             </NuxtLink>
             </li>
             <li class="breadcrumb-item active" aria-current="page">

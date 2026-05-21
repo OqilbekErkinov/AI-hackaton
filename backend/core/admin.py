@@ -6,7 +6,7 @@ from unfold.admin import ModelAdmin, TabularInline
 from unfold.decorators import display, action
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
-from rankedu_backend.admin_site import admin_site
+from nexora_backend.admin_site import admin_site
 from .models import (
     ScholarshipApplication, AcademicYear, Faculty, Major, Profile, 
     Message, Resume, SocialAchievement, AnnualRanking, GrantQuota, 

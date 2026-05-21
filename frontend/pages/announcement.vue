@@ -5,7 +5,7 @@
     <div class="list">
       <div class="item" v-for="(item, index) in topAnnouncements" :key="index">
         <div class="content">
-          <div class="author">RankEdu</div>
+          <div class="author">Nexora</div>
           <div class="title">{{ item.title }}</div>
           <!-- <div class="scroll-down" @click="scrollToFeed">
             <div class="circle">

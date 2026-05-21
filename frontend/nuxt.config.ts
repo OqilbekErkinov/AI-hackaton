@@ -2,7 +2,7 @@
 export default defineNuxtConfig({
   app: {
     head: {
-      title: "RankEdu - O`zbekiston milliy ta`lim platformasi",
+      title: "Nexora - O`zbekiston milliy ta`lim platformasi",
       htmlAttrs: { lang: "uz" },
       link: [
         { rel: "icon", type: "image/png", href: "/favicon.png" },
@@ -29,7 +29,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      siteName: "RankEdu",
+      siteName: "Nexora",
       apiUrl: process.env.NUXT_PUBLIC_API_URL || "http://127.0.0.1:9000/api",
     },
   },
