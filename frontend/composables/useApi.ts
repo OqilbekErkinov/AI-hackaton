@@ -17,10 +17,11 @@ export function useApi() {
     }
   });
 
-  // Request interceptor: Inject captured token
+  // Request interceptor: Inject token dynamically on each request
   api.interceptors.request.use((config) => {
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    const currentToken = auth.token.value;
+    if (currentToken) {
+      config.headers.Authorization = `Bearer ${currentToken}`;
     }
     return config;
   }, (error) => {

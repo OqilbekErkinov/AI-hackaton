@@ -10,7 +10,7 @@ export default function useMessages() {
   const api = useApi();
 
   async function loadUnreadCount() {
-    if (!auth.token.value) return;
+    if (!auth.token.value || !auth.user.value) return;
     try {
       const resp = await api.get("/messages/?unread=1");
       const data = resp.data.results ?? resp.data ?? [];
