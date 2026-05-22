@@ -29,6 +29,7 @@ class AIChatViewSet(viewsets.ModelViewSet):
         
         user_text = request.data.get("text")
         audio_file = request.FILES.get("audio")
+        is_voice_input = bool(audio_file)  # Ovozli kirish bo'lsa True
 
         # 1. Ovozli xabar yuborilgan bo'lsa STT qilish
         if audio_file:
@@ -51,9 +52,12 @@ class AIChatViewSet(viewsets.ModelViewSet):
         # 3. GPT-4o-mini'ga so'rov yuborish
         ai_response_text = ask_gpt(request.user, user_text, mode=mode)
 
-        # 4. Agar ovozli sintez talab qilingan bo'lsa TTS qilish
+        # 4. Ovozli sintez:
+        # - Agar OVOZLI kirish bo'lsa: har doim TTS (ovozli javob)
+        # - Agar MATN kirish bo'lsa: faqat voice_synthesize=true bo'lganda TTS
         audio_url = None
-        if voice_synthesize:
+        should_synthesize = is_voice_input or voice_synthesize
+        if should_synthesize:
             audio_url = VoiceService.synthesize_speech(ai_response_text)
 
         # 5. AI javobini saqlash
@@ -68,6 +72,7 @@ class AIChatViewSet(viewsets.ModelViewSet):
         # Ovozli yuklashda user transkripsiyasini ham qo'shimcha qaytaramiz
         serializer_data = self.get_serializer(ai_msg).data
         serializer_data["user_transcription"] = user_text
+        serializer_data["is_voice_input"] = is_voice_input  # Frontend uchun flag
         
         return Response(serializer_data, status=status.HTTP_201_CREATED)
 
@@ -114,6 +119,26 @@ class CVGenerateAPIView(views.APIView):
     def post(self, request):
         content = generate_cv_content(request.user)
         return Response({"content": content}, status=status.HTTP_200_OK)
+
+
+class TTSAPIView(views.APIView):
+    """
+    On-demand Text-to-Speech endpoint.
+    Foydalanuvchi matn javobini audio sifatida eshitmoqchi bo'lganda chaqiriladi.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        text = request.data.get("text", "").strip()
+        if not text:
+            return Response({"error": "text maydoni talab qilinadi"}, status=status.HTTP_400_BAD_REQUEST)
+        if len(text) > 4096:
+            text = text[:4096]
+        
+        audio_url = VoiceService.synthesize_speech(text)
+        if audio_url:
+            return Response({"audio_url": audio_url}, status=status.HTTP_200_OK)
+        return Response({"error": "Audio yaratishda xatolik yuz berdi"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @staff_member_required

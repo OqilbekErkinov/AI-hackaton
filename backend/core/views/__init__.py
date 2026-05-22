@@ -12,7 +12,7 @@ from .scholarship import (
     ApplyScholarshipAPIView, download_application_zip
 )
 from .ai import (
-    AIChatViewSet, MentorshipChatViewSet, CVGenerateAPIView,
+    AIChatViewSet, MentorshipChatViewSet, CVGenerateAPIView, TTSAPIView,
     AdminAIChatView, admin_ai_chat_view
 )
 from .communication import (

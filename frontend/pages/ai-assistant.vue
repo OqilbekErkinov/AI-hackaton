@@ -75,18 +75,20 @@
                   <div class="d-flex align-items-center justify-content-between mt-2 flex-wrap gap-2 border-top pt-2 opacity-75" style="font-size: 0.75rem;">
                     <span>{{ formatTime(msg.created_at) }}</span>
                     
-                    <!-- TTS Ovozli eshitish tugmasi -->
-                    <button 
-                      v-if="!msg.is_user && msg.audio_url" 
-                      class="btn btn-xs btn-outline-light-hover rounded-pill px-2 py-0.5 d-flex align-items-center gap-1 text-decoration-none text-muted"
-                      @click="playAudio(msg.audio_url)"
-                    >
-                      <i class="bi" :class="currentlyPlaying === msg.audio_url ? 'bi-volume-mute-fill text-danger' : 'bi-volume-up-fill text-success'"></i>
-                      <span>{{ currentlyPlaying === msg.audio_url ? 'To\'xtatish' : 'Tinglash' }}</span>
-                    </button>
-                  </div>
+                  <!-- TTS Ovozli eshitish tugmasi: barcha AI xabarlari uchun -->
+                  <button 
+                    v-if="!msg.is_user" 
+                    class="btn btn-xs btn-outline-light-hover rounded-pill px-2 py-0.5 d-flex align-items-center gap-1 text-decoration-none text-muted"
+                    @click="listenMessage(msg)"
+                    :disabled="msg._fetchingAudio"
+                  >
+                    <span v-if="msg._fetchingAudio" class="spinner-border spinner-border-sm" style="width:0.7rem;height:0.7rem"></span>
+                    <i v-else class="bi" :class="currentlyPlaying === (msg.audio_url || msg.id) ? 'bi-volume-mute-fill text-danger' : 'bi-volume-up-fill text-success'"></i>
+                    <span>{{ currentlyPlaying === (msg.audio_url || msg.id) ? 'To\'xtatish' : 'Tinglash' }}</span>
+                  </button>
                 </div>
               </div>
+            </div>
 
               <!-- Yozmoqda animatsiyasi -->
               <div v-if="sending" class="message-wrapper ai-message mb-4">
@@ -313,22 +315,18 @@ const sendMessage = async () => {
   
   sending.value = true;
   try {
-    // Law rejimida ovozli javobni default yoqamiz
-    const voiceSynthesize = activeMode.value === 'law';
-    
+    // Matn yuborilsa: audio sintez qilinmaydi (faqat ovozli so'rov bo'lganda audio keladi)
     const res = await api.post('/ai-chat/', { 
       text,
       mode: activeMode.value,
-      voice_synthesize: voiceSynthesize
+      voice_synthesize: false  // Matn so'rovida audio kerak emas
     });
     
     messages.value.push(res.data);
     scrollToBottom();
 
-    // Avtomatik audio ijro
-    if (res.data.audio_url) {
-      playAudio(res.data.audio_url);
-    }
+    // Matn so'rovda audio AVTOMATIK ijro bo'lmaydi
+    // Foydalanuvchi xohlasa "Tinglash" tugmasini bosadi
   } catch (e) {
     messages.value.push({ 
       text: "Uzr, tizimda xatolik yuz berdi.", 
@@ -447,7 +445,7 @@ const sendVoiceMessage = async (audioBlob) => {
     messages.value.push(res.data);
     scrollToBottom();
 
-    // Avtomatik audio ijro
+    // Ovozli so'rovda: javob AVTOMATIK ovozda ijro etiladi
     if (res.data.audio_url) {
       playAudio(res.data.audio_url);
     }
@@ -490,6 +488,40 @@ const playAudio = (url) => {
     console.error("Audio load error:", e, absoluteUrl);
     currentlyPlaying.value = null;
   };
+};
+
+// "Tinglash" tugmasi bosilganda: audio bo'lsa eshit, bo'lmasa TTS so'ra
+const listenMessage = async (msg) => {
+  if (msg.audio_url) {
+    // Audio allaqachon mavjud — to'g'ridan-to'g'ri ijro et
+    playAudio(msg.audio_url);
+    return;
+  }
+  
+  // Agar audio URL yo'q bo'lsa (matn xabari) — on-demand TTS so'raymiz
+  if (msg._fetchingAudio) return;
+  msg._fetchingAudio = true;
+  
+  try {
+    const res = await api.post('/ai/tts/', { text: msg.text });
+    if (res.data.audio_url) {
+      msg.audio_url = res.data.audio_url;
+      playAudio(res.data.audio_url);
+    }
+  } catch (e) {
+    // TTS endpointi bo'lmasa — frontend-dan to'g'ridan-to'g'ri Web Speech API ishlatamiz
+    console.warn("TTS endpoint not available, using Web Speech API:", e.message);
+    if ('speechSynthesis' in window) {
+      const utterance = new SpeechSynthesisUtterance(msg.text);
+      utterance.lang = 'uz-UZ';
+      utterance.rate = 0.9;
+      currentlyPlaying.value = msg.id || msg.text.substring(0, 20);
+      utterance.onend = () => { currentlyPlaying.value = null; };
+      window.speechSynthesis.speak(utterance);
+    }
+  } finally {
+    msg._fetchingAudio = false;
+  }
 };
 
 const clearChat = () => {
