@@ -69,28 +69,43 @@
                 class="message-wrapper mb-4"
                 :class="msg.is_user ? 'user-message' : 'ai-message'"
               >
-                <div class="message-bubble shadow-sm p-3 position-relative" :class="[msg.is_user ? 'user-bubble' : 'ai-bubble', activeMode]">
-                  <div class="message-text" v-html="formatText(msg.text)"></div>
+                <div class="message-bubble shadow-sm position-relative" :class="[msg.is_user ? 'user-bubble' : 'ai-bubble', activeMode, msg.is_voice ? 'voice-bubble' : 'p-3']">
                   
-                  <div class="d-flex align-items-center justify-content-between mt-2 flex-wrap gap-2 border-top pt-2 opacity-75" style="font-size: 0.75rem;">
+                  <!-- 🎤 OVOZLI XABAR (Telegram uslubida) -->
+                  <div v-if="msg.is_voice" class="voice-message-player d-flex align-items-center gap-2">
+                    <button
+                      class="voice-play-btn"
+                      :class="currentlyPlaying === (msg.local_audio_url || msg.audio_url) ? 'playing' : ''"
+                      @click="playVoiceMsg(msg)"
+                    >
+                      <i class="bi" :class="currentlyPlaying === (msg.local_audio_url || msg.audio_url) ? 'bi-pause-fill' : 'bi-play-fill'"></i>
+                    </button>
+                    <div class="voice-waveform flex-grow-1">
+                      <span v-for="n in 20" :key="n" class="waveform-bar" :style="{ height: (Math.sin(n * 0.8) * 50 + 55) + '%', animationDelay: (n * 0.05) + 's' }"></span>
+                    </div>
+                    <span class="voice-duration small fw-semibold">{{ msg.duration || '0:00' }}</span>
+                  </div>
+
+                  <!-- 💬 MATN XABAR -->
+                  <div v-else class="message-text" v-html="formatText(msg.text)"></div>
+                  
+                  <!-- Vaqt + Tinglash (faqat AI ovozli javoblar uchun) -->
+                  <div class="d-flex align-items-center justify-content-between mt-2 flex-wrap gap-2 border-top pt-2 opacity-75" :class="msg.is_voice ? 'px-1' : ''" style="font-size: 0.75rem;">
                     <span>{{ formatTime(msg.created_at) }}</span>
-                    
-                  <!-- TTS Ovozli eshitish tugmasi: barcha AI xabarlari uchun -->
-                  <button 
-                    v-if="!msg.is_user" 
-                    class="btn btn-xs btn-outline-light-hover rounded-pill px-2 py-0.5 d-flex align-items-center gap-1 text-decoration-none text-muted"
-                    @click="listenMessage(msg)"
-                    :disabled="msg._fetchingAudio"
-                  >
-                    <span v-if="msg._fetchingAudio" class="spinner-border spinner-border-sm" style="width:0.7rem;height:0.7rem"></span>
-                    <i v-else class="bi" :class="currentlyPlaying === (msg.audio_url || msg.id) ? 'bi-volume-mute-fill text-danger' : 'bi-volume-up-fill text-success'"></i>
-                    <span>{{ currentlyPlaying === (msg.audio_url || msg.id) ? 'To\'xtatish' : 'Tinglash' }}</span>
-                  </button>
+                    <!-- "Tinglash" faqat ovozli AI javoblar uchun (is_voice && !is_user && audio_url) -->
+                    <button 
+                      v-if="!msg.is_user && msg.is_voice && msg.audio_url" 
+                      class="btn btn-xs btn-outline-light-hover rounded-pill px-2 py-0 d-flex align-items-center gap-1 text-muted"
+                      @click="playAudio(msg.audio_url)"
+                    >
+                      <i class="bi" :class="currentlyPlaying === msg.audio_url ? 'bi-pause-fill text-danger' : 'bi-play-fill text-success'"></i>
+                      <span>{{ currentlyPlaying === msg.audio_url ? 'To\'xtatish' : 'Ijro' }}</span>
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
 
-              <!-- Yozmoqda animatsiyasi -->
+              <!-- Yuborilmoqda animatsiyasi -->
               <div v-if="sending" class="message-wrapper ai-message mb-4">
                 <div class="message-bubble shadow-sm p-3 typing-bubble" :class="activeMode">
                   <span class="dot"></span><span class="dot"></span><span class="dot"></span>
@@ -398,10 +413,9 @@ const cancelRecording = () => {
 const sendVoiceMessage = async (audioBlob) => {
   // Bo'sh audio bo'lsa yubormaymiz
   if (!audioBlob || audioBlob.size < 1000) {
-    console.warn('Audio too short or empty, size:', audioBlob?.size);
     messages.value.push({
-      text: '🎤 Ovoz juda qisqa yoki bo\'sh. Iltimos, qayta urinib ko\'ring.',
-      is_user: false,
+      text: '🎤 Ovoz juda qisqa. Iltimos qayta urinib ko\'ring.',
+      is_user: false, is_voice: false,
       created_at: new Date().toISOString(),
       mode: activeMode.value
     });
@@ -410,18 +424,26 @@ const sendVoiceMessage = async (audioBlob) => {
 
   sending.value = true;
   const formData = new FormData();
-  // Audio kengaytmasini aniq ko'rsatamiz
-  const ext = audioBlob.type.includes('ogg') ? 'ogg' : 
-               audioBlob.type.includes('mp4') ? 'mp4' : 'webm';
+  const ext = audioBlob.type.includes('ogg') ? 'ogg' : audioBlob.type.includes('mp4') ? 'mp4' : 'webm';
   formData.append("audio", audioBlob, `recording.${ext}`);
   formData.append("mode", activeMode.value);
-  formData.append("voice_synthesize", "true"); // Ovozli so'rovda doimo javob ovozli bo'ladi
+  formData.append("voice_synthesize", "true");
 
   const now = new Date().toISOString();
-  // Transkripsiya kutish vaqtida placeholder
+  // Local blob URL — foydalanuvchi o'z ovozini qayta eshitishi uchun
+  const localBlobUrl = URL.createObjectURL(audioBlob);
+  const durationStr = recordingDuration.value > 0 
+    ? `0:${String(recordingDuration.value).padStart(2, '0')}`
+    : '0:00';
+
+  // Ovozli xabar Telegram uslubida (matn emas)
   const placeholderIndex = messages.value.push({ 
-    text: "🎤 Ovoz yozildi, matnga o'girilmoqda...", 
+    text: null,
     is_user: true, 
+    is_voice: true,
+    local_audio_url: localBlobUrl,
+    duration: durationStr,
+    _sending: true,  // Yuborilmoqda holati
     created_at: now,
     mode: activeMode.value 
   }) - 1;
@@ -430,35 +452,42 @@ const sendVoiceMessage = async (audioBlob) => {
 
   try {
     const res = await api.post('/ai-chat/', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
+      headers: { 'Content-Type': 'multipart/form-data' }
     });
     
-    // User xabari o'rniga Whisper qaytargan transkripsiyani qo'yamiz
-    if (res.data.user_transcription) {
-      messages.value[placeholderIndex].text = res.data.user_transcription;
-    } else {
-      messages.value[placeholderIndex].text = "Ovozli xabar yuborildi.";
-    }
+    // User bubble: ovozli ko'rinish saqlanadi, faqat _sending olib tashlanadi
+    messages.value[placeholderIndex]._sending = false;
     
-    messages.value.push(res.data);
+    // AI javobi ham ovozli bubble sifatida
+    messages.value.push({
+      ...res.data,
+      is_voice: true,  // AI javobi ham ovozli xabar sifatida ko'rinsin
+      duration: null   // AI javob uzunligini frontend da bilmaymiz
+    });
     scrollToBottom();
 
-    // Ovozli so'rovda: javob AVTOMATIK ovozda ijro etiladi
+    // AI ovozli javobi AVTOMATIK ijro
     if (res.data.audio_url) {
       playAudio(res.data.audio_url);
     }
   } catch (e) {
-    console.error("STT network error:", e.response?.data || e.message);
-    const errMsg = e.response?.data?.error || 'Ovozni o\'qishda xatolik yuz berdi.';
+    console.error("STT error:", e.response?.data || e.message);
+    const errMsg = e.response?.data?.error || 'Ovozli xabar yuborishda xatolik.';
+    messages.value[placeholderIndex].is_voice = false;
     messages.value[placeholderIndex].text = `🎤 ${errMsg}`;
+    messages.value[placeholderIndex]._sending = false;
   } finally {
     sending.value = false;
   }
 };
 
-// TTS Ovozli eshitish funksiyasi
+// Ovozli xabar play tugmasi (user o'z ovozini eshitishi)
+const playVoiceMsg = (msg) => {
+  const url = msg.local_audio_url || msg.audio_url;
+  if (!url) return;
+  playAudio(url);
+};
+
 const playAudio = (url) => {
   if (audioPlayer) {
     audioPlayer.pause();
@@ -701,5 +730,84 @@ const formatTime = (d) => {
   to {
     transform: scale(1.15);
   }
+}
+/* ======= OVOZLI XABAR BUBBLE (Telegram uslubi) ======= */
+.voice-bubble {
+  padding: 10px 14px !important;
+  min-width: 200px;
+  max-width: 300px;
+}
+
+.voice-message-player {
+  min-width: 200px;
+}
+
+.voice-play-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255,255,255,0.25);
+  color: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.user-bubble .voice-play-btn {
+  background: rgba(255,255,255,0.2);
+  color: #fff;
+}
+
+.ai-bubble .voice-play-btn {
+  background: var(--primary-light);
+  color: var(--primary);
+}
+
+.voice-play-btn.playing {
+  background: var(--primary) !important;
+  color: #fff !important;
+}
+
+.voice-play-btn:hover {
+  transform: scale(1.05);
+  opacity: 0.9;
+}
+
+.voice-waveform {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 28px;
+}
+
+.waveform-bar {
+  display: inline-block;
+  width: 3px;
+  border-radius: 3px;
+  background: currentColor;
+  opacity: 0.5;
+  transition: height 0.1s ease;
+}
+
+/* Ijro bo'layotganda animatsiya */
+.voice-play-btn.playing ~ .voice-waveform .waveform-bar {
+  animation: waveAnim 1s ease-in-out infinite alternate;
+  opacity: 0.9;
+}
+
+@keyframes waveAnim {
+  0% { opacity: 0.4; transform: scaleY(0.6); }
+  100% { opacity: 1; transform: scaleY(1); }
+}
+
+.voice-duration {
+  font-size: 0.72rem;
+  opacity: 0.8;
+  flex-shrink: 0;
 }
 </style>
