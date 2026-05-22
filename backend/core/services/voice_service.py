@@ -63,11 +63,13 @@ class VoiceService:
                 os.remove(temp_path)
 
     @staticmethod
-    def synthesize_speech(text, voice_type="alloy"):
+    def synthesize_speech(text, voice_type="uz-UZ-SardorNeural"):
         """
-        OpenAI TTS API yordamida matnli javobni audio faylga (MP3) o'giradi va URL qaytaradi.
+        Microsoft Edge TTS yordamida matnli javobni audio faylga (MP3) o'giradi va URL qaytaradi.
+        O'zbek aksenti uchun uz-UZ-SardorNeural (erkak) yoki uz-UZ-MadinaNeural (ayol) ishlatiladi.
         """
-        client = get_openai_client()
+        import asyncio
+        import edge_tts
         
         voice_dir = os.path.join(settings.MEDIA_ROOT, "voice_responses")
         os.makedirs(voice_dir, exist_ok=True)
@@ -76,15 +78,9 @@ class VoiceService:
         filepath = os.path.join(voice_dir, filename)
         
         try:
-            # OpenAI TTS chaqiruvi
-            response = client.audio.speech.create(
-                model="tts-1",
-                voice=voice_type,  # alloy, echo, fable, onyx, nova, shimmer
-                input=text
-            )
-            
-            # Faylga yozish
-            response.write_to_file(filepath)
+            # Edge TTS orqali sintezlash (async code sync-ga o'giriladi)
+            communicate = edge_tts.Communicate(text, voice_type)
+            asyncio.run(communicate.save(filepath))
             
             # Fayl URL manzilini qaytarish
             audio_url = f"{settings.MEDIA_URL}voice_responses/{filename}"
