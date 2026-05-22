@@ -239,7 +239,7 @@ class ScholarshipApplicationSerializer(serializers.ModelSerializer):
 class AIChatMessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = AIChatMessage
-        fields = ['id', 'is_user', 'text', 'created_at']
+        fields = ['id', 'is_user', 'text', 'mode', 'audio_url', 'created_at']
         read_only_fields = ['id', 'created_at']
 
 

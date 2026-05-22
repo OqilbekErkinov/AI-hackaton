@@ -8,32 +8,68 @@ from core.serializers import AIChatMessageSerializer, MentorshipMessageSerialize
 from core.services.ai_service import ask_gpt, generate_cv_content
 from core.services.mentorship_service import ask_mentor
 from core.services.admin_ai_service import ask_admin_ai
+from core.services.voice_service import VoiceService
 
 class AIChatViewSet(viewsets.ModelViewSet):
     """
     ViewSet for students to chat with the general Academic AI Assistant.
-    Generates intelligent responses and logs chat history.
+    Supports text/voice inputs, law/mentor modes, and TTS generation.
     """
     serializer_class = AIChatMessageSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return AIChatMessage.objects.filter(user=self.request.user)
+        # Rejim bo'yicha tarixni filtrlash (alohida va toza saqlash uchun)
+        mode = self.request.query_params.get("mode", "mentor")
+        return AIChatMessage.objects.filter(user=self.request.user, mode=mode)
 
     def create(self, request, *args, **kwargs):
+        mode = request.data.get("mode", "mentor")
+        voice_synthesize = request.data.get("voice_synthesize") == "true" or request.data.get("voice_synthesize") is True
+        
         user_text = request.data.get("text")
+        audio_file = request.FILES.get("audio")
+
+        # 1. Ovozli xabar yuborilgan bo'lsa STT qilish
+        if audio_file:
+            try:
+                user_text = VoiceService.transcribe_audio(audio_file)
+            except Exception as e:
+                return Response({"error": f"Ovozni matnga o'girishda xatolik: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
+        
         if not user_text:
-            return Response({"error": "text maydoni talab qilinadi"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "text yoki audio fayl maydoni talab qilinadi"}, status=status.HTTP_400_BAD_REQUEST)
 
-        # 1. Save user query
-        AIChatMessage.objects.create(user=request.user, is_user=True, text=user_text)
+        # 2. Foydalanuvchi so'rovini saqlash
+        user_msg = AIChatMessage.objects.create(
+            user=request.user, 
+            is_user=True, 
+            text=user_text,
+            mode=mode
+        )
 
-        # 2. Query core AI service adapter
-        ai_response_text = ask_gpt(request.user, user_text)
+        # 3. GPT-4o-mini'ga so'rov yuborish
+        ai_response_text = ask_gpt(request.user, user_text, mode=mode)
 
-        # 3. Save AI response and return
-        ai_msg = AIChatMessage.objects.create(user=request.user, is_user=False, text=ai_response_text)
-        return Response(self.get_serializer(ai_msg).data, status=status.HTTP_201_CREATED)
+        # 4. Agar ovozli sintez talab qilingan bo'lsa TTS qilish
+        audio_url = None
+        if voice_synthesize:
+            audio_url = VoiceService.synthesize_speech(ai_response_text)
+
+        # 5. AI javobini saqlash
+        ai_msg = AIChatMessage.objects.create(
+            user=request.user, 
+            is_user=False, 
+            text=ai_response_text,
+            mode=mode,
+            audio_url=audio_url
+        )
+        
+        # Ovozli yuklashda user transkripsiyasini ham qo'shimcha qaytaramiz
+        serializer_data = self.get_serializer(ai_msg).data
+        serializer_data["user_transcription"] = user_text
+        
+        return Response(serializer_data, status=status.HTTP_201_CREATED)
 
 
 class MentorshipChatViewSet(viewsets.ModelViewSet):

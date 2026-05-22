@@ -1,6 +1,7 @@
 from openai import OpenAI
 import os
 from core.models import SocialAchievement
+from core.services.rag_service import RAGService
 
 # ⚠️ MUHIM: OPENAI_API_KEY ni .env faylida saqlang
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "sk-proj-placeholder")
@@ -24,13 +25,33 @@ def get_platform_context(user):
     return context
 
 
-def ask_gpt(user, user_message, history=None):
+def ask_gpt(user, user_message, mode="mentor", history=None):
     """
     AI ASSISTANT funksiyasi.
+    Ikkita rejimni qo'llab-quvvatlaydi:
+    1. 'mentor': Shaxsiy akademik maslahatchi.
+    2. 'law': Rasmiy oliy ta'lim nizomlari bo'yicha RAG maslahatchisi.
     """
-    context = get_platform_context(user)
+    if mode == "law":
+        # RAG qidiruv tizimi orqali mos nizomlarni olamiz
+        rag_context = RAGService.search(user_message, limit=3)
+        
+        system_instruction = f"""
+Siz O'zbekiston Respublikasi Oliy ta'lim vazirligi va oliygohlarning rasmiy Huquqiy va Nizomlar bo'yicha maslahatchisisiz. Ismingiz "Adliya & Nizomlar AI".
+Vazifangiz: Foydalanuvchining savoliga faqat taqdim etilgan rasmiy nizom va qonunlar asosida to'liq aniq, ishonchli va rasmiy-idoraviy uslubda javob berish.
 
-    system_instruction = f"""
+QUYIDAGI RASMIY NIZOMLAR VA ME'YORIY HUJJATLARGA TAYANING:
+{rag_context}
+
+MUHIM SHARTLAR:
+1. Javobingizni FAQAT yuqorida taqdim etilgan qoidalar asosida shakllantiring. Hujjatlarda bo'lmagan ma'lumotlarni o'zingizdan to'qimang.
+2. Har bir javobingizda tegishli qoidaning sarlavhasi yoki bandiga aniq havola qiling (Masalan: "O'qishni ko'chirish nizomining 2-bandiga ko'ra...").
+3. Agar berilgan savolga taqdim etilgan nizomlar ichida javob bo'lmasa, uydirma ma'lumot yozmang va muloyimlik bilan faqat ushbu nizomlar doirasida (Stipendiyalar, Ko'chirish, GPA, Dress-code) yordam bera olishingizni tushuntiring.
+4. Javobingizni to'liq O'zbek tilida bering. Markdown formatidan (ro'yxat, qalin matn) foydalaning.
+"""
+    else:
+        context = get_platform_context(user)
+        system_instruction = f"""
 Siz platformaning aqlli yordamchisisiz. Ismingiz "AI Yordamchi".
 Vazifangiz: Foydalanuvchilarga motivatsiya berish, savollarga javob berish,
 mos imkoniyatlarni tavsiya qilish.
@@ -49,7 +70,7 @@ Javoblarni O'zbek tilida bering.
                 {"role": "system", "content": system_instruction},
                 {"role": "user", "content": user_message}
             ],
-            temperature=0.7,
+            temperature=0.3 if mode == "law" else 0.7, # Law rejimida aniqlik uchun past harorat
             max_tokens=1000
         )
         if response and response.choices:

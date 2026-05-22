@@ -150,6 +150,8 @@ class AIChatMessage(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="ai_chats", verbose_name="Foydalanuvchi")
     is_user = models.BooleanField(default=True, verbose_name="Foydalanuvchimi?")
     text = models.TextField(verbose_name="Xabar matni")
+    mode = models.CharField(max_length=20, default="mentor", choices=[("mentor", "Mentor"), ("law", "Law")], verbose_name="Rejim")
+    audio_url = models.CharField(max_length=255, blank=True, null=True, verbose_name="Audio havola")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Vaqti")
 
     class Meta:
