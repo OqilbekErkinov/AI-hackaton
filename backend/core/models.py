@@ -627,3 +627,20 @@ class ScholarshipRule(models.Model):
 
     def __str__(self):
         return f"{self.rule_type} - {self.value}"
+
+# === SMART EDU VIKTORINASI (BOSQICH 4) ===
+class QuizAttempt(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="quiz_attempts", verbose_name="Foydalanuvchi")
+    topic = models.CharField(max_length=255, verbose_name="Mavzu")
+    score = models.PositiveSmallIntegerField(verbose_name="To'g'ri javoblar")
+    total_questions = models.PositiveSmallIntegerField(verbose_name="Jami savollar")
+    xp_earned = models.FloatField(default=0, verbose_name="Ishlangan XP")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Vaqti")
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = "Viktorina urinishi"
+        verbose_name_plural = "Viktorina urinishlari"
+
+    def __str__(self):
+        return f"{self.user.username} - {self.topic} ({self.score}/{self.total_questions})"

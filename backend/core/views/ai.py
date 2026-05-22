@@ -141,6 +141,77 @@ class TTSAPIView(views.APIView):
         return Response({"error": "Audio yaratishda xatolik yuz berdi"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
+# === SMART EDU VIKTORINASI (BOSQICH 4) ===
+import json
+from django.db.models import F
+from core.models import QuizAttempt, Profile
+from core.services.ai_service import generate_quiz
+
+class QuizGenerateAPIView(views.APIView):
+    """
+    GPT orqali berilgan mavzu bo'yicha dinamik test (JSON) yaratadi.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        topic = request.query_params.get("topic", "Dasturlash asoslari")
+        raw_json = generate_quiz(topic)
+        
+        # Markdown bloklarini tozalash
+        if raw_json.startswith("```json"):
+            raw_json = raw_json[7:]
+        if raw_json.endswith("```"):
+            raw_json = raw_json[:-3]
+            
+        try:
+            quiz_data = json.loads(raw_json)
+            return Response(quiz_data, status=status.HTTP_200_OK)
+        except json.JSONDecodeError:
+            return Response({"error": "AI test yaratishda xatolik yuz berdi.", "raw": raw_json}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class QuizSubmitAPIView(views.APIView):
+    """
+    Talaba testni yechib bo'lgach, natijani saqlaydi va XP (ball) beradi.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        topic = request.data.get("topic")
+        score = request.data.get("score")
+        total_questions = request.data.get("total_questions")
+
+        if not all([topic, score is not None, total_questions]):
+            return Response({"error": "Barcha maydonlar (topic, score, total_questions) talab qilinadi."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            score = int(score)
+            total_questions = int(total_questions)
+        except ValueError:
+            return Response({"error": "score va total_questions butun son bo'lishi kerak."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # 1 ta to'g'ri javob = 5 XP
+        xp_earned = score * 5
+
+        # Natijani saqlash
+        attempt = QuizAttempt.objects.create(
+            user=request.user,
+            topic=topic,
+            score=score,
+            total_questions=total_questions,
+            xp_earned=xp_earned
+        )
+
+        # Foydalanuvchi profiliga umumiy XP ni qo'shish
+        Profile.objects.filter(user=request.user).update(xp=F('xp') + xp_earned)
+
+        return Response({
+            "message": "Natija saqlandi!",
+            "xp_earned": xp_earned,
+            "total_score": score
+        }, status=status.HTTP_201_CREATED)
+
+
 @staff_member_required
 def admin_ai_chat_view(request):
     """

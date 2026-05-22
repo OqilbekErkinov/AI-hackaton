@@ -7,7 +7,8 @@ from .views import (
     ApplicationCreateView, AnnouncementListAPIView, AnnouncementViewUpdateAPIView,
     CheckEligibilityAPIView, ApplyScholarshipAPIView, UploadDocumentAPIView, 
     MyDocumentsAPIView, DeleteDocumentAPIView,
-    AIChatViewSet, MentorshipChatViewSet, CVGenerateAPIView, TTSAPIView, AdminAIChatView,
+    AIChatViewSet, MentorshipChatViewSet, CVGenerateAPIView, TTSAPIView, 
+    QuizGenerateAPIView, QuizSubmitAPIView, AdminAIChatView,
     admin_ai_chat_view)
 
 router = DefaultRouter()
@@ -36,6 +37,8 @@ urlpatterns = [
     path("documents/", MyDocumentsAPIView.as_view()),
     path("documents/upload/", UploadDocumentAPIView.as_view()),
     path("documents/<int:doc_id>/delete/", DeleteDocumentAPIView.as_view()),
+    path("ai/quiz/generate/", QuizGenerateAPIView.as_view(), name="quiz-generate"),
+    path("ai/quiz/submit/", QuizSubmitAPIView.as_view(), name="quiz-submit"),
     path("ai/generate-cv/", CVGenerateAPIView.as_view(), name="ai-generate-cv"),
     path("ai/tts/", TTSAPIView.as_view(), name="ai-tts"),
     path("admin-ai-chat/", AdminAIChatView.as_view(), name="admin-ai-chat"),

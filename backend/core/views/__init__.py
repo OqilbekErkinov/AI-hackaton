@@ -13,6 +13,7 @@ from .scholarship import (
 )
 from .ai import (
     AIChatViewSet, MentorshipChatViewSet, CVGenerateAPIView, TTSAPIView,
+    QuizGenerateAPIView, QuizSubmitAPIView,
     AdminAIChatView, admin_ai_chat_view
 )
 from .communication import (
