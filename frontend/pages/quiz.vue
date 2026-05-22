@@ -5,30 +5,43 @@
         <div class="col-lg-8 col-xl-7">
           
           <!-- Bosh sahifa (Mavzu tanlash) -->
-          <div v-if="!isQuizStarted && !isQuizFinished" class="card shadow-sm border-0 rounded-4 p-4 p-md-5">
+          <div v-if="!isQuizStarted && !isQuizFinished" class="card theme-card shadow-sm border-0 rounded-4 p-4 p-md-5">
             <div class="text-center mb-4">
-              <div class="icon-circle bg-primary bg-opacity-10 text-primary mx-auto mb-3">
+              <div class="icon-circle mx-auto mb-3">
                 <i class="bi bi-controller fs-2"></i>
               </div>
-              <h2 class="fw-bold">Smart Edu Viktorina</h2>
+              <h2 class="fw-bold text-main">Smart Edu Viktorina</h2>
               <p class="text-muted">Aql-zakovatingizni sinab ko'ring va XP ballarini ishlang!</p>
             </div>
 
             <div class="mb-4">
-              <label class="form-label fw-semibold">Qaysi mavzuda test ishlaysiz?</label>
-              <select v-model="selectedTopic" class="form-select form-select-lg">
-                <option value="Dasturlash asoslari">Dasturlash asoslari</option>
-                <option value="Sun'iy intellekt">Sun'iy intellekt</option>
-                <option value="O'zbekiston tarixi">O'zbekiston tarixi</option>
-                <option value="Matematika va mantiq">Matematika va mantiq</option>
-                <option value="Axborot xavfsizligi">Axborot xavfsizligi</option>
-                <option value="Oliy ta'lim qoidalari">Oliy ta'lim qoidalari</option>
-              </select>
+              <label class="form-label fw-semibold text-main">Qaysi mavzuda test ishlaysiz?</label>
+              <!-- Custom dropdown -->
+              <div class="custom-dropdown" :class="{ open: dropdownOpen }">
+                <button 
+                  type="button"
+                  class="dropdown-toggle-btn"
+                  @click="dropdownOpen = !dropdownOpen"
+                >
+                  <span>{{ selectedTopic }}</span>
+                  <i class="bi bi-chevron-down dropdown-arrow"></i>
+                </button>
+                <ul v-show="dropdownOpen" class="dropdown-menu-list">
+                  <li 
+                    v-for="topic in topics" 
+                    :key="topic"
+                    @click="selectTopic(topic)"
+                    :class="{ active: selectedTopic === topic }"
+                  >
+                    <i class="bi bi-bookmark-star me-2"></i>{{ topic }}
+                  </li>
+                </ul>
+              </div>
             </div>
 
             <button 
               @click="startQuiz" 
-              class="btn btn-primary btn-lg w-100 rounded-pill fw-bold"
+              class="btn btn-bg btn-lg w-100 rounded-pill fw-bold"
               :disabled="loading"
             >
               <span v-if="loading" class="spinner-border spinner-border-sm me-2"></span>
@@ -37,14 +50,14 @@
           </div>
 
           <!-- Test jarayoni -->
-          <div v-else-if="isQuizStarted && !isQuizFinished" class="card shadow-sm border-0 rounded-4 p-4 p-md-5 position-relative overflow-hidden">
+          <div v-else-if="isQuizStarted && !isQuizFinished" class="card theme-card shadow-sm border-0 rounded-4 p-4 p-md-5 position-relative overflow-hidden">
             <!-- Progress bar -->
             <div class="progress" style="height: 6px; position: absolute; top: 0; left: 0; right: 0; border-radius: 0;">
-              <div class="progress-bar bg-success transition-all" :style="{ width: progressPercentage + '%' }"></div>
+              <div class="progress-bar progress-bar-themed transition-all" :style="{ width: progressPercentage + '%' }"></div>
             </div>
 
             <div class="d-flex justify-content-between align-items-center mb-4 mt-2">
-              <span class="badge bg-light text-dark border px-3 py-2 fs-6">
+              <span class="badge quiz-badge px-3 py-2 fs-6">
                 Savol {{ currentQuestionIndex + 1 }} / {{ questions.length }}
               </span>
               <span class="text-muted fw-semibold">
@@ -52,7 +65,7 @@
               </span>
             </div>
 
-            <h4 class="fw-bold mb-4" style="line-height: 1.5;">
+            <h4 class="fw-bold mb-4 text-main" style="line-height: 1.5;">
               {{ currentQuestion.question }}
             </h4>
 
@@ -77,7 +90,7 @@
             </div>
 
             <div class="mt-4 pt-3 border-top text-end" v-if="showResult">
-              <button @click="nextQuestion" class="btn btn-primary px-4 rounded-pill fw-bold" :disabled="submitLoading">
+              <button @click="nextQuestion" class="btn btn-bg px-4 rounded-pill fw-bold" :disabled="submitLoading">
                 <span v-if="submitLoading" class="spinner-border spinner-border-sm me-2"></span>
                 {{ currentQuestionIndex === questions.length - 1 ? "Natijani ko'rish" : "Keyingi savol" }} <i v-if="!submitLoading" class="bi bi-arrow-right"></i>
               </button>
@@ -85,29 +98,29 @@
           </div>
 
           <!-- Natija -->
-          <div v-else-if="isQuizFinished" class="card shadow-sm border-0 rounded-4 p-4 p-md-5 text-center">
+          <div v-else-if="isQuizFinished" class="card theme-card shadow-sm border-0 rounded-4 p-4 p-md-5 text-center">
             <div class="mb-4">
-              <img src="https://cdn-icons-png.flaticon.com/512/3113/3113073.png" alt="Trophy" width="120" class="mb-3 drop-shadow">
-              <h2 class="fw-bold">Tabriklaymiz!</h2>
+              <div class="trophy-icon mx-auto mb-3">🏆</div>
+              <h2 class="fw-bold text-main">Tabriklaymiz!</h2>
               <p class="text-muted fs-5">Siz testni yakunladingiz.</p>
             </div>
 
             <div class="row g-3 justify-content-center mb-4">
               <div class="col-6 col-sm-4">
-                <div class="bg-light rounded-4 p-3 border">
+                <div class="result-card result-score rounded-4 p-3">
                   <div class="text-muted small fw-semibold mb-1">To'g'ri javoblar</div>
                   <h3 class="fw-bold text-success mb-0">{{ score }} / {{ questions.length }}</h3>
                 </div>
               </div>
               <div class="col-6 col-sm-4">
-                <div class="bg-primary bg-opacity-10 rounded-4 p-3 border border-primary border-opacity-25">
-                  <div class="text-primary small fw-semibold mb-1">Olingan XP</div>
-                  <h3 class="fw-bold text-primary mb-0">+{{ xpEarned }}</h3>
+                <div class="result-card result-xp rounded-4 p-3">
+                  <div class="small fw-semibold mb-1" style="color: var(--primary-light);">Olingan XP</div>
+                  <h3 class="fw-bold mb-0" style="color: var(--primary);">+{{ xpEarned }}</h3>
                 </div>
               </div>
             </div>
 
-            <button @click="resetQuiz" class="btn btn-outline-primary btn-lg rounded-pill px-5 fw-bold">
+            <button @click="resetQuiz" class="btn btn-bg btn-lg rounded-pill px-5 fw-bold">
               Boshqa test ishlash
             </button>
           </div>
@@ -125,6 +138,16 @@ import { useApi } from '~/composables/useApi';
 const api = useApi();
 const loading = ref(false);
 const submitLoading = ref(false);
+const dropdownOpen = ref(false);
+
+const topics = [
+  'Dasturlash asoslari',
+  "Sun'iy intellekt",
+  "O'zbekiston tarixi",
+  'Matematika va mantiq',
+  'Axborot xavfsizligi',
+  "Oliy ta'lim qoidalari"
+];
 
 const selectedTopic = ref('Dasturlash asoslari');
 const isQuizStarted = ref(false);
@@ -139,6 +162,11 @@ const xpEarned = ref(0);
 
 const currentQuestion = computed(() => questions.value[currentQuestionIndex.value] || {});
 const progressPercentage = computed(() => ((currentQuestionIndex.value + (showResult.value ? 1 : 0)) / questions.value.length) * 100);
+
+const selectTopic = (topic) => {
+  selectedTopic.value = topic;
+  dropdownOpen.value = false;
+};
 
 const startQuiz = async () => {
   loading.value = true;
@@ -216,7 +244,7 @@ const resetQuiz = () => {
 <style scoped>
 .quiz-container {
   min-height: 80vh;
-  background-color: #f8fafc;
+  background-color: var(--bg-app);
 }
 
 .icon-circle {
@@ -226,64 +254,171 @@ const resetQuiz = () => {
   display: flex;
   align-items: center;
   justify-content: center;
+  background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.1), rgba(var(--accent-rgb), 0.1));
+  color: var(--primary);
 }
 
+/* Custom Dropdown */
+.custom-dropdown {
+  position: relative;
+}
+
+.dropdown-toggle-btn {
+  width: 100%;
+  padding: 14px 18px;
+  background-color: var(--bg-card);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-md);
+  color: var(--text-main);
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: var(--transition-base);
+}
+
+.dropdown-toggle-btn:hover {
+  border-color: var(--primary-light);
+}
+
+.custom-dropdown.open .dropdown-toggle-btn {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
+}
+
+.dropdown-arrow {
+  transition: transform 0.3s ease;
+}
+.custom-dropdown.open .dropdown-arrow {
+  transform: rotate(180deg);
+}
+
+.dropdown-menu-list {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  list-style: none;
+  padding: 8px 0;
+  margin: 0;
+  z-index: 100;
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.dropdown-menu-list li {
+  padding: 12px 18px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-weight: 500;
+  transition: var(--transition-base);
+}
+
+.dropdown-menu-list li:hover {
+  background-color: rgba(var(--primary-rgb), 0.06);
+  color: var(--primary);
+}
+
+.dropdown-menu-list li.active {
+  background-color: rgba(var(--primary-rgb), 0.1);
+  color: var(--primary);
+  font-weight: 600;
+}
+
+/* Progress bar */
+.progress-bar-themed {
+  background: linear-gradient(90deg, var(--primary), var(--primary-light));
+}
+
+/* Quiz badge */
+.quiz-badge {
+  background-color: rgba(var(--primary-rgb), 0.08);
+  color: var(--primary);
+  border: 1px solid rgba(var(--primary-rgb), 0.15);
+}
+
+/* Option buttons */
 .option-btn {
-  background-color: #f1f5f9;
-  border: 2px solid transparent;
-  color: #334155;
+  background-color: var(--bg-card);
+  border: 2px solid var(--border-color);
+  color: var(--text-main);
   transition: all 0.2s ease;
 }
 
 .option-btn:hover:not(:disabled) {
-  background-color: #e2e8f0;
+  background-color: rgba(var(--primary-rgb), 0.04);
+  border-color: rgba(var(--primary-rgb), 0.2);
   transform: translateY(-2px);
 }
 
 .option-letter {
   width: 32px;
   height: 32px;
-  background-color: white;
+  background-color: rgba(var(--primary-rgb), 0.06);
   border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #64748b;
+  color: var(--text-muted);
+  font-size: 0.85rem;
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
 .option-btn.selected:not(.correct):not(.wrong) {
-  border-color: #3b82f6;
-  background-color: #eff6ff;
+  border-color: var(--primary);
+  background-color: rgba(var(--primary-rgb), 0.06);
 }
 .option-btn.selected:not(.correct):not(.wrong) .option-letter {
-  background-color: #3b82f6;
+  background-color: var(--primary);
   color: white;
 }
 
 .option-btn.correct {
-  border-color: #10b981;
-  background-color: #ecfdf5;
-  color: #065f46;
+  border-color: var(--success);
+  background-color: rgba(16, 106, 43, 0.06);
+  color: var(--success);
 }
 .option-btn.correct .option-letter {
-  background-color: #10b981;
+  background-color: var(--success);
   color: white;
 }
 
 .option-btn.wrong {
-  border-color: #ef4444;
-  background-color: #fef2f2;
-  color: #991b1b;
+  border-color: var(--error);
+  background-color: rgba(225, 29, 72, 0.06);
+  color: var(--error);
 }
 .option-btn.wrong .option-letter {
-  background-color: #ef4444;
+  background-color: var(--error);
   color: white;
 }
 
 .option-btn:disabled {
   opacity: 0.9;
   cursor: default;
+}
+
+/* Result cards */
+.result-card {
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-card);
+}
+.result-xp {
+  border-color: rgba(var(--primary-rgb), 0.2);
+  background-color: rgba(var(--primary-rgb), 0.05);
+}
+
+/* Trophy */
+.trophy-icon {
+  font-size: 72px;
+  line-height: 1;
+  filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));
 }
 
 .drop-shadow {

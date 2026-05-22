@@ -68,8 +68,17 @@
           :class="{ active: route.path.startsWith('/announcement') }"
           to="/announcement"
           @click="$emit('close')"
-          ><i class="bi bi-megaphone"></i> E'lonlar</NuxtLink
-        >
+        ><i class="bi bi-megaphone"></i> E'lonlar
+        </NuxtLink>
+      </li>
+      <li class="nav-item">
+        <NuxtLink
+          class="nav-link sdw-link"
+          :class="{ active: route.path.startsWith('/quiz') }"
+          to="/quiz"
+          @click="$emit('close')"
+        ><i class="bi bi-controller"></i> Smart Quiz
+        </NuxtLink>
       </li>
     </ul>
   </aside>

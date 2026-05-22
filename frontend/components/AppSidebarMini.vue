@@ -72,6 +72,16 @@
           ><i class="bi bi-megaphone"></i
         ></NuxtLink>
       </li>
+      <li class="nav-item">
+        <NuxtLink
+          class="smini-link"
+          :class="{ active: route.path.startsWith('/quiz') }"
+          to="/quiz"
+          @click="$emit('close')"
+          title="Smart Quiz"
+        ><i class="bi bi-controller"></i>
+        </NuxtLink>
+      </li>
     </ul>
   </aside>
 </template>

@@ -5,7 +5,7 @@ export default defineNuxtConfig({
       title: "Nexora - O`zbekiston milliy ta`lim platformasi",
       htmlAttrs: { lang: "uz" },
       link: [
-        { rel: "icon", type: "image/png", href: "/favicon.png" },
+        { rel: "icon", type: "image/x-icon", href: "/favicon.ico?v=3" },
         {
           rel: "preconnect",
           href: "https://fonts.gstatic.com",
