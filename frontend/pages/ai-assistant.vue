@@ -232,6 +232,9 @@
 import { ref, onMounted, nextTick } from 'vue';
 
 const api = useApi();
+const config = useRuntimeConfig();
+// API baza manzilidan media URL ni olish (masalan: http://127.0.0.1:9000)
+const API_MEDIA_BASE = (config.public.apiUrl || 'http://127.0.0.1:9000/api').replace('/api', '');
 
 const messages = ref([]);
 const userInput = ref('');
@@ -395,9 +398,24 @@ const cancelRecording = () => {
 
 // Ovozli xabarni yuborish servisi
 const sendVoiceMessage = async (audioBlob) => {
+  // Bo'sh audio bo'lsa yubormaymiz
+  if (!audioBlob || audioBlob.size < 1000) {
+    console.warn('Audio too short or empty, size:', audioBlob?.size);
+    messages.value.push({
+      text: '🎤 Ovoz juda qisqa yoki bo\'sh. Iltimos, qayta urinib ko\'ring.',
+      is_user: false,
+      created_at: new Date().toISOString(),
+      mode: activeMode.value
+    });
+    return;
+  }
+
   sending.value = true;
   const formData = new FormData();
-  formData.append("audio", audioBlob, "recording.webm");
+  // Audio kengaytmasini aniq ko'rsatamiz
+  const ext = audioBlob.type.includes('ogg') ? 'ogg' : 
+               audioBlob.type.includes('mp4') ? 'mp4' : 'webm';
+  formData.append("audio", audioBlob, `recording.${ext}`);
   formData.append("mode", activeMode.value);
   formData.append("voice_synthesize", "true"); // Ovozli so'rovda doimo javob ovozli bo'ladi
 
@@ -434,8 +452,9 @@ const sendVoiceMessage = async (audioBlob) => {
       playAudio(res.data.audio_url);
     }
   } catch (e) {
-    console.error("STT network error:", e);
-    messages.value[placeholderIndex].text = "🎤 Ovozli xabarni yuborishda muammo yuz berdi.";
+    console.error("STT network error:", e.response?.data || e.message);
+    const errMsg = e.response?.data?.error || 'Ovozni o\'qishda xatolik yuz berdi.';
+    messages.value[placeholderIndex].text = `🎤 ${errMsg}`;
   } finally {
     sending.value = false;
   }
@@ -454,8 +473,9 @@ const playAudio = (url) => {
 
   currentlyPlaying.value = url;
   
-  // Backend bazaviy URL ulash
-  const absoluteUrl = url.startsWith('http') ? url : `http://127.0.0.1:8000${url}`;
+  // Backend bazaviy URL ulash (runtimeConfig dan dinamik ravishda)
+  const absoluteUrl = url.startsWith('http') ? url : `${API_MEDIA_BASE}${url}`;
+  console.log('Playing audio URL:', absoluteUrl);
   audioPlayer = new Audio(absoluteUrl);
   audioPlayer.play().catch(err => {
     console.error("Audio play error:", err);
@@ -466,7 +486,8 @@ const playAudio = (url) => {
     currentlyPlaying.value = null;
   };
   
-  audioPlayer.onerror = () => {
+  audioPlayer.onerror = (e) => {
+    console.error("Audio load error:", e, absoluteUrl);
     currentlyPlaying.value = null;
   };
 };
