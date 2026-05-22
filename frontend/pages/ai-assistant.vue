@@ -316,7 +316,7 @@ const sendMessage = async () => {
     const res = await api.post('/ai-chat/', { 
       text,
       mode: activeMode.value,
-      voice_synthesize
+      voice_synthesize: voiceSynthesize
     });
     
     messages.value.push(res.data);
