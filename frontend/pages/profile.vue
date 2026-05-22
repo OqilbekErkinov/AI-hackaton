@@ -16,7 +16,20 @@
             </div>
           </div>
 
-          <!-- XP and Level removed -->
+          <!-- XP and Level -->
+          <div class="mt-4 p-3 rounded-4 bg-light bg-opacity-50 border border-light">
+            <div class="d-flex justify-content-between mb-2 small text-secondary">
+              <span class="fw-semibold">Reyting ballari</span>
+              <span class="fw-bold text-primary">{{ profile.xp || 0 }} / 100</span>
+            </div>
+            <div class="progress" style="height: 10px; border-radius: 6px; background-color: rgba(0,0,0,0.05); overflow: hidden;">
+              <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary" role="progressbar" :style="{ width: (profile.xp || 0) + '%' }"></div>
+            </div>
+            <div class="d-flex justify-content-between mt-3 small text-secondary border-top pt-2">
+              <span>Global Reyting:</span>
+              <span class="fw-bold text-dark">#{{ profile.global_rank || '-' }}</span>
+            </div>
+          </div>
 
           <div class="mt-3 d-grid">
             <button class="btn btn-outline-danger" @click="removeAvatar">
@@ -47,7 +60,21 @@
                 {{ profile.major_name }} <span class="mx-1">•</span> <i class="bi bi-mortarboard"></i> {{ profile.course }}-kurs
               </div>
               <div class="d-flex flex-wrap align-items-center gap-4 mt-3">
-                <!-- XP stats removed -->
+                <!-- XP stats -->
+                <div class="d-flex align-items-center gap-2 px-3 py-2 rounded-4 bg-primary bg-opacity-10 border border-primary border-opacity-10">
+                  <i class="bi bi-award-fill text-primary fs-4"></i>
+                  <div>
+                    <div class="small text-secondary lh-1">Jami To'plangan Ball</div>
+                    <div class="fw-extrabold text-primary fs-5">{{ profile.xp || 0 }} ball</div>
+                  </div>
+                </div>
+                <div class="d-flex align-items-center gap-2 px-3 py-2 rounded-4 bg-success bg-opacity-10 border border-success border-opacity-10">
+                  <i class="bi bi-trophy-fill text-success fs-4"></i>
+                  <div>
+                    <div class="small text-secondary lh-1">Universitet Reytingi</div>
+                    <div class="fw-extrabold text-success fs-5">#{{ profile.global_rank || '-' }}-o'rin</div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

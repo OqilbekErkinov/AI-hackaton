@@ -1,6 +1,6 @@
 from django.db.models import Sum, Q
 from django.contrib.auth.models import User
-from core.models import AnnualRanking, Profile, StudentDocument, Major, DOCUMENT_MAX_POINTS
+from core.models import AnnualRanking, GrantQuota, Profile, StudentDocument
 
 
 def recalc_global_ranks():
@@ -15,23 +15,25 @@ def recalc_global_ranks():
 
 
 def generate_annual_ranking(year_id):
+    from core.logic import DOCUMENT_MAX_POINTS
     # Eski rankinglarni o‘chiramiz
     AnnualRanking.objects.filter(academic_year_id=year_id).delete()
 
-    majors = Major.objects.all()
+    quotas = GrantQuota.objects.filter(academic_year_id=year_id)
     
     new_rankings = []
 
-    for major in majors:
+    for quota in quotas:
+        major = quota.major
         students_list = User.objects.filter(profile__major=major)
         
         ranked_students = []
         for student in students_list:
-            total_capped_score = 0.0
+            total_capped_score = 0
             for doc_type_code, max_allowed in DOCUMENT_MAX_POINTS.items():
                 latest_doc = (
                     StudentDocument.objects
-                    .filter(user=student, doc_type=doc_type_code, status='approved', academic_year_id=year_id)
+                    .filter(user=student, doc_type=doc_type_code, status='approved')
                     .order_by('-created_at', '-id')
                     .first()
                 )
@@ -56,7 +58,8 @@ def generate_annual_ranking(year_id):
                     major=major,
                     student=item['student'],
                     total_score=item['total_score'],
-                    rank=position
+                    rank=position,
+                    is_grant_winner=position <= quota.total_slots
                 )
             )
             position += 1

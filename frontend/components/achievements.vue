@@ -143,8 +143,155 @@
 
                             <!-- GPA only for transcript -->
                             <div v-if="achForm.category === 'transcript'" class="mb-4">
-                                <label class="form-label premium-label">GPA bali (Masalan: 4.5)</label>
-                                <input v-model="achForm.score" type="text" class="form-control premium-input text-center fs-4 fw-bold" placeholder="0.0" />
+                                <label class="form-label premium-label">GPA Ko'rsatkichi (O'rtacha baho)</label>
+                                <div class="custom-form-select">
+                                    <div class="custom-form-trigger" @click="toggleFormDropdown('transcript')">
+                                        <span>{{ achForm.score ? 'GPA: ' + achForm.score : 'GPA qiymatini tanlang' }}</span>
+                                        <span class="arrow">▾</span>
+                                    </div>
+                                    <div v-if="openFormDropdown === 'transcript'" class="custom-form-menu">
+                                        <div v-for="g in ['5.0', '4.9', '4.8', '4.7', '4.6', '4.5', '4.4', '4.3', '4.2', '4.1', '4.0', '3.9', '3.8', '3.7', '3.6', '3.5']" 
+                                             :key="g" 
+                                             class="custom-form-option"
+                                             :class="{ selected: achForm.score === g }"
+                                             @click="selectFormOption('score', g)">
+                                            GPA: {{ g }} ({{ g == '5.0' ? '10' : g == '4.9' ? '9.7' : g == '4.8' ? '9.3' : g == '4.7' ? '9' : g == '4.6' ? '8.7' : g == '4.5' ? '8.3' : g == '4.4' ? '8' : g == '4.3' ? '7.7' : g == '4.2' ? '7.3' : g == '4.1' ? '7' : g == '4.0' ? '6.7' : g == '3.9' ? '6.3' : g == '3.8' ? '6' : g == '3.7' ? '5.7' : g == '3.6' ? '5.3' : '5' }} ball)
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-text small text-muted mt-1">Eslatma: GPA 3.5 dan past bo'lganda ball berilmaydi.</div>
+                            </div>
+
+                            <!-- Language Certificate Level Selection -->
+                            <div v-if="achForm.category === 'language_cert'" class="mb-4">
+                                <label class="form-label premium-label">Til bilish darajasi (IELTS / CEFR)</label>
+                                <div class="custom-form-select">
+                                    <div class="custom-form-trigger" @click="toggleFormDropdown('language_cert')">
+                                        <span>
+                                            {{ 
+                                                achForm.level === 'c2' ? 'IELTS 8.0 - 9.0 / CEFR C2 (20 ball)' :
+                                                achForm.level === 'c1' ? 'IELTS 7.0 - 7.5 / CEFR C1 (18 ball)' :
+                                                achForm.level === 'b2' ? 'IELTS 6.0 - 6.5 / CEFR B2 (15 ball)' :
+                                                achForm.level === 'b1' ? 'IELTS 5.0 - 5.5 / CEFR B1 (10 ball)' :
+                                                'Darajani tanlang'
+                                            }}
+                                        </span>
+                                        <span class="arrow">▾</span>
+                                    </div>
+                                    <div v-if="openFormDropdown === 'language_cert'" class="custom-form-menu">
+                                        <div class="custom-form-option" :class="{ selected: achForm.level === 'c2' }" @click="selectFormOption('level', 'c2')">IELTS 8.0 - 9.0 / CEFR C2 (20 ball)</div>
+                                        <div class="custom-form-option" :class="{ selected: achForm.level === 'c1' }" @click="selectFormOption('level', 'c1')">IELTS 7.0 - 7.5 / CEFR C1 (18 ball)</div>
+                                        <div class="custom-form-option" :class="{ selected: achForm.level === 'b2' }" @click="selectFormOption('level', 'b2')">IELTS 6.0 - 6.5 / CEFR B2 (15 ball)</div>
+                                        <div class="custom-form-option" :class="{ selected: achForm.level === 'b1' }" @click="selectFormOption('level', 'b1')">IELTS 5.0 - 5.5 / CEFR B1 (10 ball)</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Article level Selection -->
+                            <div v-if="achForm.category === 'article'" class="mb-4">
+                                <label class="form-label premium-label">Maqola toifasi (Darajasi)</label>
+                                <div class="custom-form-select">
+                                    <div class="custom-form-trigger" @click="toggleFormDropdown('article')">
+                                        <span>
+                                            {{ 
+                                                achForm.level === 'international' ? 'Xalqaro miqyosdagi maqola / Scopus / Web of Science (10 ball)' :
+                                                achForm.level === 'national' ? 'Respublika OAK ro\'yxatidagi ilmiy maqola (8 ball)' :
+                                                achForm.level === 'local' ? 'OAV, mahalliy to\'plam yoki boshqa maqola (6 ball)' :
+                                                'Toifani tanlang'
+                                            }}
+                                        </span>
+                                        <span class="arrow">▾</span>
+                                    </div>
+                                    <div v-if="openFormDropdown === 'article'" class="custom-form-menu">
+                                        <div class="custom-form-option" :class="{ selected: achForm.level === 'international' }" @click="selectFormOption('level', 'international')">Xalqaro miqyosdagi maqola / Scopus / Web of Science (10 ball)</div>
+                                        <div class="custom-form-option" :class="{ selected: achForm.level === 'national' }" @click="selectFormOption('level', 'national')">Respublika OAK ro'yxatidagi ilmiy maqola (8 ball)</div>
+                                        <div class="custom-form-option" :class="{ selected: achForm.level === 'local' }" @click="selectFormOption('level', 'local')">OAV, mahalliy to'plam yoki boshqa maqola (6 ball)</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Thesis level Selection -->
+                            <div v-if="achForm.category === 'thesis'" class="mb-4">
+                                <label class="form-label premium-label">Tezis darajasi</label>
+                                <div class="custom-form-select">
+                                    <div class="custom-form-trigger" @click="toggleFormDropdown('thesis')">
+                                        <span>
+                                            {{ 
+                                                achForm.level === 'international' ? 'Xalqaro konferensiya tezisi (10 ball)' :
+                                                achForm.level === 'local' ? 'Respublika yoki oliygoh miqyosidagi tezis (6 ball)' :
+                                                'Darajani tanlang'
+                                            }}
+                                        </span>
+                                        <span class="arrow">▾</span>
+                                    </div>
+                                    <div v-if="openFormDropdown === 'thesis'" class="custom-form-menu">
+                                        <div class="custom-form-option" :class="{ selected: achForm.level === 'international' }" @click="selectFormOption('level', 'international')">Xalqaro konferensiya tezisi (10 ball)</div>
+                                        <div class="custom-form-option" :class="{ selected: achForm.level === 'local' }" @click="selectFormOption('level', 'local')">Respublika yoki oliygoh miqyosidagi tezis (6 ball)</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Publication level Selection -->
+                            <div v-if="achForm.category === 'publication'" class="mb-4">
+                                <label class="form-label premium-label">Nashr turi</label>
+                                <div class="custom-form-select">
+                                    <div class="custom-form-trigger" @click="toggleFormDropdown('publication')">
+                                        <span>
+                                            {{ 
+                                                achForm.level === 'monograph' ? 'Kitob, monografiya yoki darslik (10 ball)' :
+                                                achForm.level === 'local' ? 'O\'quv qo\'llanma, uslubiy qo\'llanma (6 ball)' :
+                                                'Turni tanlang'
+                                            }}
+                                        </span>
+                                        <span class="arrow">▾</span>
+                                    </div>
+                                    <div v-if="openFormDropdown === 'publication'" class="custom-form-menu">
+                                        <div class="custom-form-option" :class="{ selected: achForm.level === 'monograph' }" @click="selectFormOption('level', 'monograph')">Kitob, monografiya yoki darslik (10 ball)</div>
+                                        <div class="custom-form-option" :class="{ selected: achForm.level === 'local' }" @click="selectFormOption('level', 'local')">O'quv qo'llanma, uslubiy qo'llanma (6 ball)</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- IT Certificate Level Selection -->
+                            <div v-if="achForm.category === 'ict_cert'" class="mb-4">
+                                <label class="form-label premium-label">IT sertifikat darajasi</label>
+                                <div class="custom-form-select">
+                                    <div class="custom-form-trigger" @click="toggleFormDropdown('ict_cert')">
+                                        <span>
+                                            {{ 
+                                                achForm.level === 'international' ? 'Xalqaro IT sertifikat (Google, Microsoft, Cisco, Coursera va b.) (10 ball)' :
+                                                achForm.level === 'local' ? 'Mahalliy IT sertifikat (6 ball)' :
+                                                'Sertifikat turini tanlang'
+                                            }}
+                                        </span>
+                                        <span class="arrow">▾</span>
+                                    </div>
+                                    <div v-if="openFormDropdown === 'ict_cert'" class="custom-form-menu">
+                                        <div class="custom-form-option" :class="{ selected: achForm.level === 'international' }" @click="selectFormOption('level', 'international')">Xalqaro IT sertifikat (Google, Microsoft, Cisco, Coursera va b.) (10 ball)</div>
+                                        <div class="custom-form-option" :class="{ selected: achForm.level === 'local' }" @click="selectFormOption('level', 'local')">Mahalliy IT sertifikat (6 ball)</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Conference Level Selection -->
+                            <div v-if="achForm.category === 'conference'" class="mb-4">
+                                <label class="form-label premium-label">Konferensiya darajasi</label>
+                                <div class="custom-form-select">
+                                    <div class="custom-form-trigger" @click="toggleFormDropdown('conference')">
+                                        <span>
+                                            {{ 
+                                                achForm.level === 'international' ? 'Xalqaro ilmiy-amaliy konferensiya (5 ball)' :
+                                                achForm.level === 'local' ? 'Respublika yoki oliygoh konferensiyasi (3 ball)' :
+                                                'Darajani tanlang'
+                                            }}
+                                        </span>
+                                        <span class="arrow">▾</span>
+                                    </div>
+                                    <div v-if="openFormDropdown === 'conference'" class="custom-form-menu">
+                                        <div class="custom-form-option" :class="{ selected: achForm.level === 'international' }" @click="selectFormOption('level', 'international')">Xalqaro ilmiy-amaliy konferensiya (5 ball)</div>
+                                        <div class="custom-form-option" :class="{ selected: achForm.level === 'local' }" @click="selectFormOption('level', 'local')">Respublika yoki oliygoh konferensiyasi (3 ball)</div>
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="mb-4">
@@ -237,6 +384,15 @@ const achForm = reactive({
     proofFile: null,
     proofUrl: ""
 });
+
+const openFormDropdown = ref(null);
+function toggleFormDropdown(name) {
+    openFormDropdown.value = openFormDropdown.value === name ? null : name;
+}
+function selectFormOption(field, val) {
+    achForm[field] = val;
+    openFormDropdown.value = null;
+}
 
 function getCatIcon(key) {
     const icons = {
@@ -702,5 +858,68 @@ watch(
     border-radius: 24px;
     border: none;
     box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+}
+
+/* Custom Dropdown Styles */
+.custom-form-select {
+    position: relative;
+    width: 100%;
+}
+
+.custom-form-trigger {
+    background-color: var(--bg-app);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    padding: 12px 16px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-main);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.2s ease;
+}
+
+.custom-form-trigger:hover {
+    border-color: var(--primary);
+    box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.05);
+}
+
+.custom-form-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin-top: 6px;
+    background-color: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    z-index: 1050;
+    max-height: 250px;
+    overflow-y: auto;
+    padding: 6px;
+}
+
+.custom-form-option {
+    padding: 10px 14px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #475569;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-align: left;
+}
+
+.custom-form-option:hover {
+    background-color: var(--primary);
+    color: #ffffff;
+}
+
+.custom-form-option.selected {
+    background-color: var(--primary);
+    color: #ffffff;
 }
 </style>

@@ -32,7 +32,7 @@
           <i class="bi bi-book"></i>
         </NuxtLink>
       </li>
-      <li class="nav-item">
+      <!-- <li class="nav-item">
         <NuxtLink
           class="smini-link"
           :class="{ active: route.path.startsWith('/social') }"
@@ -41,7 +41,7 @@
         >
           <i class="bi bi-person-workspace"></i>
         </NuxtLink>
-      </li>
+      </li> -->
 
       <li class="nav-item">
         <NuxtLink

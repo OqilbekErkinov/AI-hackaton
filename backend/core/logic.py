@@ -144,3 +144,140 @@ def calculate_score(achievement):
 
     # Hech bo'lmaganda 1 ball qaytarish (agar category topilsa)
     return min(score, max_allowed)
+
+
+DOCUMENT_MAX_POINTS = {
+    "transcript": 10.0,
+    "language_cert": 20.0,
+    "article": 10.0,
+    "thesis": 10.0,
+    "publication": 10.0,
+    "ict_cert": 10.0,
+    "history_cert": 5.0,
+    "conference": 5.0,
+    "recommendation": 0.0,
+    "passport": 0.0,
+}
+
+GPA_TO_POINTS = {
+    5.0: 10.0,
+    4.9: 9.7,
+    4.8: 9.3,
+    4.7: 9.0,
+    4.6: 8.7,
+    4.5: 8.3,
+    4.4: 8.0,
+    4.3: 7.7,
+    4.2: 7.3,
+    4.1: 7.0,
+    4.0: 6.7,
+    3.9: 6.3,
+    3.8: 6.0,
+    3.7: 5.7,
+    3.6: 5.3,
+    3.5: 5.0,
+}
+
+
+def calculate_document_score(document):
+    """
+    Sertifikat va hujjatlarning qadr-qiymatiga ko'ra avtomatik va o'zgartirib bo'lmaydigan ball hisoblash tizimi.
+    """
+    doc_type = document.doc_type
+    meta = document.meta or {}
+    
+    # Ensure keys are case-insensitive/cleaned
+    meta_clean = {str(k).lower(): v for k, v in meta.items() if v is not None}
+    max_allowed = float(DOCUMENT_MAX_POINTS.get(doc_type, 0.0))
+    
+    score = 0.0
+
+    if doc_type == "transcript":
+        # Transcript / Baholar (Maksimal 10 ball)
+        gpa_val = meta_clean.get("score") or meta_clean.get("gpa") or meta_clean.get("gpa_score")
+        try:
+            gpa = float(gpa_val)
+            if gpa > 5.0:
+                # 100-lik tizimdagi GPA bo'lsa
+                gpa = round(gpa / 20.0, 1)
+            elif gpa > 4.0:
+                gpa = round(gpa, 1)
+            elif gpa > 0.0:
+                # 4.0 tizimidagi GPA bo'lsa
+                gpa = round(gpa * 1.25, 1)
+            
+            score = GPA_TO_POINTS.get(gpa, 0.0)
+            if score == 0.0 and gpa >= 3.5:
+                # Agar oraliq qiymat bo'lsa, eng yaqin GPA kalitini topamiz
+                closest_gpa = min(GPA_TO_POINTS.keys(), key=lambda x: abs(x - gpa))
+                score = GPA_TO_POINTS[closest_gpa]
+        except (ValueError, TypeError):
+            score = 0.0
+
+    elif doc_type == "language_cert":
+        # Til sertifikati (Maksimal 20 ball)
+        level_val = str(meta_clean.get("level") or meta_clean.get("score") or meta_clean.get("note") or "").lower().strip()
+        
+        if "c2" in level_val or "8." in level_val or "9." in level_val:
+            score = 20.0
+        elif "c1" in level_val or "7." in level_val:
+            score = 18.0
+        elif "b2" in level_val or "6." in level_val:
+            score = 15.0
+        elif "b1" in level_val or "5." in level_val:
+            score = 10.0
+        else:
+            score = 10.0  # Defolt B1 darajasi
+
+    elif doc_type == "article":
+        # Ilmiy maqola (Xalqaro: 10 ball, Respublika: 8 ball, Mahalliy: 6 ball)
+        level = str(meta_clean.get("level") or "").lower()
+        if "international" in level or "xalqaro" in level or "scopus" in level:
+            score = 10.0
+        elif "national" in level or "respublika" in level or "oak" in level:
+            score = 8.0
+        else:
+            score = 6.0
+
+    elif doc_type == "thesis":
+        # Tezis (Xalqaro: 10 ball, Mahalliy/Respublika: 6 ball)
+        level = str(meta_clean.get("level") or "").lower()
+        if "international" in level or "xalqaro" in level:
+            score = 10.0
+        else:
+            score = 6.0
+
+    elif doc_type == "publication":
+        # Boshqa nashr ishlari (Kitob/Monografiya: 10 ball, Qo'llanma: 6 ball)
+        level = str(meta_clean.get("level") or "").lower()
+        if "monograph" in level or "kitob" in level or "monografiya" in level:
+            score = 10.0
+        else:
+            score = 6.0
+
+    elif doc_type == "ict_cert":
+        # IT sertifikati (Xalqaro: 10 ball, Mahalliy: 6 ball)
+        level = str(meta_clean.get("level") or "").lower()
+        if "international" in level or "xalqaro" in level or "google" in level or "microsoft" in level:
+            score = 10.0
+        else:
+            score = 6.0
+
+    elif doc_type == "history_cert":
+        score = 5.0
+
+    elif doc_type == "conference":
+        # Konferensiya (Xalqaro: 5 ball, Mahalliy/Respublika: 3 ball)
+        level = str(meta_clean.get("level") or "").lower()
+        if "international" in level or "xalqaro" in level:
+            score = 5.0
+        else:
+            score = 3.0
+
+    elif doc_type == "recommendation":
+        score = 0.0
+
+    elif doc_type == "passport":
+        score = 0.0
+
+    return min(score, max_allowed)

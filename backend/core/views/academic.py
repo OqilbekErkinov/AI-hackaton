@@ -12,9 +12,10 @@ from core.services.ranking import generate_annual_ranking
 
 def recalc_profile_xp(user):
     """
-    Recalculates a student's total XP (document rating) based on their approved StudentDocuments in each category.
+    Recalculates a student's total XP based on their approved StudentDocuments.
     """
-    from core.models import StudentDocument, DOCUMENT_MAX_POINTS
+    from core.models import StudentDocument
+    from core.logic import DOCUMENT_MAX_POINTS
     
     total_xp = 0.0
     

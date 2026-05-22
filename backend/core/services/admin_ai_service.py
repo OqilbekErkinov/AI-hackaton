@@ -22,10 +22,10 @@ def get_admin_context():
     # 2. Eng yaxshi talabalar (Top 10 XP)
     top_students = Profile.objects.all().order_by('-xp')[:10]
     
-    # 3. Yillik reyting nomzodlari (agar joriy yil bo'lsa)
-    ranking_candidates = []
+    # 3. Grant nomzodlari (agar joriy yil bo'lsa)
+    grant_candidates = []
     if active_year:
-        ranking_candidates = AnnualRanking.objects.filter(academic_year=active_year).order_by('rank')[:15]
+        grant_candidates = AnnualRanking.objects.filter(academic_year=active_year).order_by('rank')[:15]
 
     summary = f"--- NEXORA PLATFORMA ANALITIKASI ---\n"
     summary += f"Joriy faol yil: {active_year.name if active_year else 'Noma`lum'}\n"
@@ -39,9 +39,9 @@ def get_admin_context():
     for p in top_students:
         summary += f"- {p.full_name} | XP: {p.xp} | Guruh: {p.group or 'Noma`lum'}\n"
 
-    if ranking_candidates:
-        summary += "\nYILLIK REYTING NOMZODLARI (TOP 15):\n"
-        for r in ranking_candidates:
+    if grant_candidates:
+        summary += "\nGRANT NOMZODLARI (TOP 15):\n"
+        for r in grant_candidates:
             summary += f"- [Rank: {r.rank}] {r.student.profile.full_name} | Ball: {r.total_score} | Yo'nalish: {r.major.name}\n"
 
     summary += "\nOXIRGI YUKLANGAN 5 TA HUJJAT:\n"
@@ -68,7 +68,7 @@ SIZGA TAQDIM ETILAYOTGAN JORIY MA'LUMOTLAR:
 VAZIFALARINGIZ:
 1. Ma'lumotlardagi g'alati holatlarni (anomaliyalar) aniqlang (masalan, kutilayotgan hujjatlar juda ko'payib ketgan bo'lsa).
 2. Eng faol yo'nalishlar va guruhlarni tahlil qiling.
-3. Reytingdagi yuqori munosib nomzodlar haqida tavsiyalar bering.
+3. Grantga munosib nomzodlar haqida tavsiyalar bering.
 4. Foydalanuvchi savoliga qarab, yuqoridagi kontekstdan foydalanib ANIQ raqamlar bilan javob bering.
 5. Agar admin savoli kontekstda bo'lmasa, umumiy tizim boshqaruvi bo'yicha maslahat bering.
 

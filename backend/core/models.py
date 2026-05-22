@@ -330,17 +330,38 @@ class AnnualRanking(models.Model):
     total_score = models.FloatField(verbose_name="Umumiy ball")
     rank = models.IntegerField(verbose_name="Rank")
 
+    is_grant_winner = models.BooleanField(default=False, verbose_name="Grant g'olibimi?")
+
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Yaratilgan vaqti")
 
     class Meta:
         unique_together = ("academic_year", "major", "student")
         ordering = ["rank"]
-        verbose_name = "Yillik reyting"
-        verbose_name_plural = "Yillik reytinglar"
+        verbose_name = "Grant uchun nomzodlar"
+        verbose_name_plural = "Grant uchun nomzodlar"
 
     def __str__(self):
         return f"{self.student} - {self.rank}"
 
+class GrantQuota(models.Model):
+    academic_year = models.ForeignKey(
+        AcademicYear,
+        on_delete=models.CASCADE,
+        verbose_name="Akademik yil"
+    )
+    major = models.ForeignKey(
+        Major,
+        on_delete=models.CASCADE,
+        verbose_name="Yo'nalish"
+    )
+    total_slots = models.IntegerField(verbose_name="Grant joylari soni")
+
+    class Meta:
+        verbose_name = "Grant kvotasi"
+        verbose_name_plural = "Grant kvotalari"
+
+    def __str__(self):
+        return f"{self.major} - {self.total_slots} grant"
 
 
 
@@ -487,19 +508,6 @@ class Announcement(models.Model):
         super().save(*args, **kwargs)
 
 
-DOCUMENT_MAX_POINTS = {
-    "transcript": 30.0,
-    "language_cert": 20.0,
-    "article": 10.0,
-    "thesis": 10.0,
-    "publication": 10.0,
-    "ict_cert": 10.0,
-    "conference": 5.0,
-    "history_cert": 5.0,
-    "recommendation": 0.0,
-    "passport": 0.0,
-}
-
 class StudentDocument(models.Model):
     DOCUMENT_TYPES = [
         ("transcript", "Transcript / Baholar"),
@@ -557,6 +565,7 @@ class StudentDocument(models.Model):
 
     def clean(self):
         from django.core.exceptions import ValidationError
+        from core.logic import DOCUMENT_MAX_POINTS
         super().clean()
         max_p = DOCUMENT_MAX_POINTS.get(self.doc_type, 0.0)
         if self.score > max_p:
@@ -576,6 +585,12 @@ class StudentDocument(models.Model):
             if active_year:
                 self.academic_year = active_year
 
+        from core.logic import calculate_document_score
+        if self.status == 'approved':
+            self.score = calculate_document_score(self)
+        elif self.status == 'rejected':
+            self.score = 0.0
+        
         super().save(*args, **kwargs)
 
 

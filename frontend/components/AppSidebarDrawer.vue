@@ -31,16 +31,16 @@
           <i class="bi bi-book"></i> Akademik o`zlashtirish
         </NuxtLink>
       </li>
-      <li class="nav-item">
+      <!-- <li class="nav-item">
         <NuxtLink
           class="nav-link sdw-link"
           :class="{ active: route.path.startsWith('/social') }"
           to="/social"
           @click="$emit('close')"
         >
-          <i class="bi bi-person-workspace"></i> Portfolio
+          <i class="bi bi-person-workspace"></i> Ijtimoiy faollik
         </NuxtLink>
-      </li>
+      </li> -->
 
       <li class="nav-item">
         <NuxtLink

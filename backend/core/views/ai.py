@@ -93,7 +93,7 @@ def admin_ai_chat_view(request):
 class AdminAIChatView(views.APIView):
     """
     API endpoint for admin-exclusive AI Chat queries about overall university statistics,
-    ranking lists, and academic dashboard insights.
+    grant eligibility lists, and academic dashboard insights.
     """
     authentication_classes = [authentication.SessionAuthentication, authentication.BasicAuthentication]
     permission_classes = [permissions.IsAdminUser]
