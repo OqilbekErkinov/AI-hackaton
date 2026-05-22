@@ -117,7 +117,6 @@
 <script setup>
 import { ref, onMounted, onUnmounted, computed } from "vue";
 import Hero from "./hero.vue";
-import useApi from "@/composables/useApi";
 
 definePageMeta({ layout: "default" });
 
